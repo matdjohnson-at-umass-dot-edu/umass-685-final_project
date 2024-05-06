@@ -1,26 +1,26 @@
-from ..model.base_hyperparameters import BaseHyperparameters
-from ..data.base_dataset_transformer import BaseDatasetTransformer
+from ..data.dataset_holder import DatasetHolder
 
 import torch
 
 
 class BaseModelTrainer:
 
-    def __init__(self, dataset_transformer):
-        pass
+    def __init__(self):
+        self.dataset_holder: DatasetHolder = None
+        self.model: torch.nn.Module = None
 
-    def set_hyperparameters(self, hyperparameters: BaseHyperparameters):
-        pass
+    def get_dataset_holder(self):
+        return self.dataset_holder
 
-    def set_source_dataset(self, source_dataset):
-        pass
+    def set_dataset_holder(self, dataset_holder):
+        self.dataset_holder = dataset_holder
 
-    def set_target_dataset(self, target_dataset):
-        pass
+    def get_model(self):
+        return self.model
 
-    def load_trainer(self):
-        pass
+    def set_model(self, model):
+        self.model = model
 
-    def run_trainer(self, model: torch.nn.Module, dataset_transformer: BaseDatasetTransformer):
+    def run_trainer(self):
         pass
 
