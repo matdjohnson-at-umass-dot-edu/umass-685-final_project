@@ -1,5 +1,4 @@
 import random
-
 import torch
 
 from src.main.python.package.data.dataset_holder import DatasetHolder

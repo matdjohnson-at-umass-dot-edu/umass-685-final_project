@@ -1,8 +1,7 @@
-
-from ..data.dataset_holder import DatasetHolder
 import torch
 import os
 
+from ..data.dataset_holder import DatasetHolder
 from ..utils import Utils
 
 

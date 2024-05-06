@@ -7,6 +7,7 @@ from ..data.dataset_utils import DatasetUtils
 from ..utils import Utils
 
 
+# class name matches file name
 class model_trainer_kocmi2018(BaseModelTrainer):
 
     def __init__(self,
@@ -15,25 +16,22 @@ class model_trainer_kocmi2018(BaseModelTrainer):
                  trainer_parameter_directory=None,
                  runner_hyperparameters_name=None):
         self.trainer_hyperparameters = trainer_hyperparameters
+        self.optimizer_name = self.trainer_hyperparameters['optimizer_name']
+        self.initial_lr = self.trainer_hyperparameters['initial_lr']
+        self.lr_scheduler_name = self.trainer_hyperparameters['lr_scheduler_name']
+        self.epochs = self.trainer_hyperparameters['epochs']
+        self.batch_size = self.trainer_hyperparameters['batch_size']
         self.model_parameter_directory = model_parameter_directory
         self.trainer_parameter_directory = trainer_parameter_directory
         self.runner_hyperparameters_name = runner_hyperparameters_name
 
     # pretraining is not used for monolingual english as described in Xue 2021 - ByT5 - Sec 3.1
     def run_trainer(self):
-        optimizer_name = self.trainer_hyperparameters.get('optimizer_name')
-        _optimizer_class_ = Utils.load_python_object('torch.optim', optimizer_name)
-        initial_lr = self.trainer_hyperparameters.get('initial_lr')
-        optimizer = _optimizer_class_(self.model.parameters(), lr=initial_lr)
-
-        lr_scheduler_name = self.trainer_hyperparameters.get('lr_scheduler_name')
-        _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', lr_scheduler_name)
+        _optimizer_class_ = Utils.load_python_object('torch.optim', self.optimizer_name)
+        optimizer = _optimizer_class_(self.model.parameters(), lr=self.initial_lr)
+        _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
         lr_scheduler = _lr_scheduler_class_(optimizer, np.reciprocal(np.e))
-
-        epochs = self.trainer_hyperparameters.get('epochs')
-        batch_size = self.trainer_hyperparameters.get('batch_size')
-
         loss_fcn = torch.nn.NLLLoss()
 
         parameter_count = 0
@@ -44,20 +42,20 @@ class model_trainer_kocmi2018(BaseModelTrainer):
                 bytes_consumed = bytes_consumed + parameter.data.nbytes
         gb_consumed = bytes_consumed / 1024 / 1024 / 1024
 
-        print(f"Beginning training of model with parameter count {parameter_count} and parameter memory use {gb_consumed} GB")
-        for i in range(0, epochs):
+        print(f"Beginning training of model with parameter count {parameter_count} "
+              f"and parameter memory use {gb_consumed} GB")
+        for i in range(0, self.epochs):
             epoch_start = time.time()
-            print(f"Beginning epoch {i} of {epochs}")
+            print(f"Beginning epoch {i} of {self.epochs}")
             DatasetUtils.shuffle_dataset(self.dataset_holder)
             source_encoding_batches, target_encoding_batches = (
                 DatasetUtils.prepare_batches(
                     self.dataset_holder,
-                    batch_size
+                    self.batch_size
                 )
             )
             assert len(source_encoding_batches) == len(target_encoding_batches)
             batch_ct = len(source_encoding_batches)
-            label_values_to_add_for_batch_elements = torch.eye(batch_size)
             for j in range(0, batch_ct):
                 batch_sequence_length = source_encoding_batches[j].shape[1]
                 for k in range(1, batch_sequence_length-1):

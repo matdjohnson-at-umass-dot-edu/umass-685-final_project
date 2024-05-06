@@ -2,9 +2,11 @@ from typing import Optional, Union, Callable
 import torch
 
 
+# class name matches file name
 class transformer_vaswani2017(torch.nn.Transformer):
 
-    def __init__(self, model_hyperparameters):
+    def __init__(self,
+                 model_hyperparameters):
         super().__init__(
             d_model=model_hyperparameters['d_model'],
             nhead=model_hyperparameters['nhead'],
@@ -80,3 +82,4 @@ class transformer_vaswani2017(torch.nn.Transformer):
         )
         del transformer_output
         return output
+

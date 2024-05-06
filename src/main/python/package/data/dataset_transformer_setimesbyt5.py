@@ -3,6 +3,7 @@ import torch
 from .dataset_holder import DatasetHolder
 
 
+# class name matches file name
 class dataset_transformer_setimesbyt5():
 
     def __init__(self,

@@ -1,6 +1,6 @@
-from ..data.dataset_holder import DatasetHolder
-
 import torch
+
+from ..data.dataset_holder import DatasetHolder
 
 
 class BaseModelTrainer:
