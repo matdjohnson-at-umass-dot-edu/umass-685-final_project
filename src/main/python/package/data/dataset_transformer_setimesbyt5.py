@@ -1,3 +1,6 @@
+from collections import Counter
+
+import numpy as np
 import torch
 
 from .dataset_holder import DatasetHolder
@@ -16,6 +19,7 @@ class dataset_transformer_setimesbyt5():
         self.ids_filename = ids_filename
         self.en_filename = en_filename
         self.tr_filename = tr_filename
+        self.sentence_length_max_percentile = dataset_hyperparameters['sentence_length_max_percentile']
         self.dataset_hyperparameters = dataset_hyperparameters
 
     def read_dataset(self):
@@ -43,21 +47,36 @@ class dataset_transformer_setimesbyt5():
                 print("Content: " + line)
                 continue
             line_number = line_number + 1
-        max_seq_obs = 0
+
         for line in en_file:
-            en_sentence = line.strip()
-            if len(en_sentence) > max_seq_obs:
-                max_seq_obs = len(en_sentence)
-            en_sentences.append(en_sentence)
+            en_sentences.append(line.strip())
         for line in tr_file:
             tr_sentences.append(line.strip())
         for index in indices:
             target_sentences.append(en_sentences[index[0] - 1])
             source_sentences.append(tr_sentences[index[1] - 1])
+        target_sentence_lengths = list()
+        for sentence in target_sentences:
+            target_sentence_lengths.append(len(sentence))
+        source_sentence_lengths = list()
+        for sentence in source_sentences:
+            source_sentence_lengths.append(len(sentence))
+        target_sentences_length_limited = list()
+        source_sentences_length_limited = list()
+        target_max_len = int(np.percentile(sorted(target_sentence_lengths), self.sentence_length_max_percentile))
+        source_max_len = int(np.percentile(sorted(source_sentence_lengths), self.sentence_length_max_percentile))
+        max_seq_obs = 0
+        for i in range(0, len(target_sentences)):
+            if len(target_sentences[i]) <= target_max_len and len(source_sentences[i]) <= source_max_len:
+                if len(target_sentences[i]) > max_seq_obs:
+                    max_seq_obs = len(target_sentences[i])
+                target_sentences_length_limited.append(target_sentences[i])
+                source_sentences_length_limited.append(source_sentences[i])
         dataset_holder = DatasetHolder()
-        dataset_holder.set_target_sentences(target_sentences)
-        dataset_holder.set_source_sentences(source_sentences)
+        dataset_holder.set_target_sentences(target_sentences_length_limited)
+        dataset_holder.set_source_sentences(source_sentences_length_limited)
         dataset_holder.set_max_seq_obs(max_seq_obs)
+        print(f"max seq length: {max_seq_obs}")
         return dataset_holder
 
     # encode to Pytorch tensors as raw UTF-8 character vocabulary

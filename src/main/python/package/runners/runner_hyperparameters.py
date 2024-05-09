@@ -5,7 +5,9 @@ SETimesByT5Vaswani2017Kocmi2018_0 = {
     'model_name': 'transformer_vaswani2017',
     'trainer_name': 'model_trainer_kocmi2018',
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
-    'dataset_transformer_hyperparameters': {},
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_max_percentile': 80
+    },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
         'd_model': 512,

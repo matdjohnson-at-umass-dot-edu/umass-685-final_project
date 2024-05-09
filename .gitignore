@@ -6,3 +6,5 @@ venv
 **/*.iml
 pyvenv.cfg
 src/main/resources/**/*
+**/__pycache__
+**/.DS_Store
