@@ -607,48 +607,6 @@ class DatasetUtils:
         return "".join(decoded_tensor.tolist())
 
 
-# Implementation of positional encoding that you can use in your network
-class PositionalEncoding(torch.nn.Module):
-    def __init__(self, max_seq_len: int, d_embedding: int, batched=True, encodings_frozen=True):
-        """
-        :param d_model: dimensionality of the embedding layer to your model; since the position encodings are being
-        added to character encodings, these need to match (and will match the dimension of the subsequent Transformer
-        layer inputs/outputs)
-        :param num_positions: the number of positions that need to be encoded; the maximum sequence length this
-        module will see
-        :param batched: True if you are using batching, False otherwise
-        """
-        super().__init__()
-        # Dict size
-        self.emb = torch.nn.Embedding(max_seq_len, d_embedding).requires_grad_(not encodings_frozen)
-        self.batched = batched
-        self.indices_cache = {}
-
-    def forward(self, x):
-        """
-        :param x: If using batching, should be [batch size, seq len, embedding dim]. Otherwise, [seq len, embedding dim]
-        :return: a tensor of the same size with positional embeddings added in
-        """
-        # Second-to-last dimension will always be sequence length
-        input_size = x.shape[-2]
-        indices_to_embed = self.get_indices_tensor(input_size)
-        if self.batched:
-            # Use unsqueeze to form a [1, seq len, embedding dim] tensor -- broadcasting will ensure that this
-            # gets added correctly across the batch
-            emb_unsq = self.emb(indices_to_embed).unsqueeze(0)
-            return_value = x + emb_unsq
-        else:
-            return_value = x + self.emb(indices_to_embed)
-        del indices_to_embed
-        del emb_unsq
-        return return_value
-
-    def get_indices_tensor(self, size):
-        if size not in self.indices_cache:
-            self.indices_cache[size] = torch.tensor(np.arange(0, size)).to(device="cuda", dtype=torch.long)
-        return self.indices_cache[size]
-
-
 # class name matches file name
 class transformer_vaswani2017(torch.nn.Transformer):
 
@@ -681,14 +639,14 @@ class transformer_vaswani2017(torch.nn.Transformer):
             model_hyperparameters['tgt_vocab_size'],
             model_hyperparameters['d_model']
         )
-        self.src_pos_enc = PositionalEncoding(
-            max_seq_len=self.max_src_seq_len,
-            d_embedding=model_hyperparameters['d_model']
-        )
-        self.tgt_pos_enc = PositionalEncoding(
-            max_seq_len=self.max_tgt_seq_len,
-            d_embedding=model_hyperparameters['d_model']
-        )
+        self.src_pos_enc = torch.nn.Embedding(
+            self.max_src_seq_len,
+            model_hyperparameters['d_model']
+        ).requires_grad_(False)
+        self.tgt_pos_enc = torch.nn.Embedding(
+            self.max_tgt_seq_len,
+            model_hyperparameters['d_model']
+        ).requires_grad_(False)
         self.linear_output_projection_1 = torch.nn.Linear(
             self.max_tgt_seq_len,
             1,
@@ -702,6 +660,17 @@ class transformer_vaswani2017(torch.nn.Transformer):
         self.logsoftmax_output = torch.nn.LogSoftmax(dim=1)
         self.model_hyperparameters = model_hyperparameters
         self.tgt_mask_cache = {}
+        for i in range(1, self.max_tgt_seq_len + 1):
+            tgt_mask = self.generate_square_subsequent_mask(i)
+            if is_remote_execution:
+                self.tgt_mask_cache[i] = tgt_mask.to(device="cuda")
+            self.tgt_mask_cache[i] = tgt_mask
+        self.indices_cache = {}
+        for i in range(0, np.max(self.max_src_seq_len, self.max_tgt_seq_len)):
+            indices = torch.tensor(np.arange(0, size))
+            if is_remote_execution:
+                indices = indices.to(device="cuda", dtype=torch.long)
+            self.indices_cache[i] = indices
 
     def forward(self,
                 src: torch.Tensor,
@@ -715,9 +684,9 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 src_is_causal: Optional[bool] = None,
                 tgt_is_causal: Optional[bool] = True,
                 memory_is_causal: bool = False) -> torch.Tensor:
-        src_embedding_pos_enc = self.src_pos_enc(self.src_embeddings(src))
-        tgt_embedding_pos_enc = self.tgt_pos_enc(self.tgt_embeddings(tgt))
-        tgt_mask = self.get_tgt_mask(tgt.shape[1])
+        src_embedding_pos_enc = self.src_embeddings(src) + self.src_pos_enc(self.indices_cache[src.shape[1]])
+        tgt_embedding_pos_enc = self.tgt_embeddings(tgt) + self.tgt_pos_enc(self.indices_cache[tgt.shape[1]])
+        tgt_mask = self.tgt_mask_cache[tgt.shape[1]]
         transformer_output = super().forward(src_embedding_pos_enc, tgt_embedding_pos_enc, src_mask,
                                              tgt_mask, memory_mask, src_key_padding_mask,
                                              tgt_key_padding_mask, memory_key_padding_mask,
@@ -742,12 +711,6 @@ class transformer_vaswani2017(torch.nn.Transformer):
         del tgt_embedding_pos_enc
         del transformer_output
         return output
-
-    def set_tgt_mask_cache(self, tgt_mask_cache):
-        self.tgt_mask_cache = tgt_mask_cache
-
-    def get_tgt_mask(self, mask_len):
-        return self.tgt_mask_cache[mask_len]
 
 
 class model_trainer_kocmi2018():
@@ -777,13 +740,6 @@ class model_trainer_kocmi2018():
             torch.cuda.empty_cache()
             self.model.cuda()
             loss_weights = loss_weights.to(device="cuda")
-        tgt_mask_cache = {}
-        for i in range(1, self.model.max_tgt_seq_len + 1):
-            if is_remote_execution:
-                tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i, device="cuda")
-            else:
-                tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i)
-        self.model.set_tgt_mask_cache(tgt_mask_cache)
         _optimizer_class_ = Utils.load_python_object('torch.optim', self.optimizer_name)
         optimizer = _optimizer_class_(self.model.parameters(), lr=self.initial_lr)
         _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
