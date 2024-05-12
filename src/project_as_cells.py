@@ -120,8 +120,6 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
         'batch_size': 200
     }
 }
-
-
 class DatasetHolder:
 
     def __init__(self):
@@ -134,11 +132,9 @@ class DatasetHolder:
         self.source_vocab_tensor = None
         self.target_encodings = None
         self.target_encodings_train = None
-        self.target_encodings_validate = None
         self.target_encodings_test = None
         self.source_encodings = None
         self.source_encodings_train = None
-        self.source_encodings_validate = None
         self.source_encodings_test = None
         self.max_seq_obs = 0
 
@@ -205,18 +201,6 @@ class DatasetHolder:
 
     def set_source_encodings_train(self, source_encodings_train):
         self.source_encodings_train = source_encodings_train
-
-    def get_target_encodings_validate(self):
-        return self.target_encodings_validate
-
-    def set_target_encodings_validate(self, target_encodings_validate):
-        self.target_encodings_validate = target_encodings_validate
-
-    def get_source_encodings_validate(self):
-        return self.source_encodings_validate
-
-    def set_source_encodings_validate(self, source_encodings_validate):
-        self.source_encodings_validate = source_encodings_validate
 
     def get_target_encodings_test(self):
         return self.target_encodings_test
@@ -393,20 +377,8 @@ class DatasetUtils:
     def shuffle_training_dataset(dataset_holder: DatasetHolder):
         new_source_encodings, new_target_encodings = (
             DatasetUtils.shuffle_encodings(
-                dataset_holder.get_source_encodings_validate(),
-                dataset_holder.get_target_encodings_validate()
-            )
-        )
-        dataset_holder.set_source_encodings(new_source_encodings)
-        dataset_holder.set_target_encodings(new_target_encodings)
-        return dataset_holder
-
-    @staticmethod
-    def shuffle_validation_dataset(dataset_holder: DatasetHolder):
-        new_source_encodings, new_target_encodings = (
-            DatasetUtils.shuffle_encodings(
-                dataset_holder.get_source_encodings_validate(),
-                dataset_holder.get_target_encodings_validate()
+                dataset_holder.get_source_encodings_train(),
+                dataset_holder.get_target_encodings_train()
             )
         )
         dataset_holder.set_source_encodings(new_source_encodings)
@@ -446,31 +418,20 @@ class DatasetUtils:
         best_split_target_encodings = None
         best_split_source_encodings = None
         best_split_deviation_from_desired = 1
-        split_size = len(dataset_holder.get_target_encodings()) // 10
-        train_size = split_size * 8
-        while not split_with_even_target_distribution and iteration < 1000:
+        segments = 20
+        split_size = len(dataset_holder.get_target_encodings()) // segments
+        train_size = split_size * (segments - 1)
+        while not split_with_even_target_distribution and iteration < 100:
+            segment_attempt_start = time.time()
             dataset_holder = DatasetUtils.shuffle_dataset(dataset_holder)
             target_encodings = dataset_holder.get_target_encodings()
             source_encodings = dataset_holder.get_source_encodings()
-            segments = 20
-            split_size = len(target_encodings) // segments
-            train_size = split_size * (segments - 2)
             train_set_target_enc = target_encodings[0:train_size]
-            validation_set_target_enc = target_encodings[train_size:train_size+split_size]
-            test_set_target_enc = target_encodings[train_size+split_size:]
+            test_set_target_enc = target_encodings[train_size:]
             numpy_encodings = list()
             for encoding in train_set_target_enc:
                 numpy_encodings.append(encoding.flatten().numpy())
             train_set_target_enc_cts = np.bincount(
-                np.concatenate([
-                    np.concatenate(numpy_encodings),
-                    np.arange(0, 170)
-                ])
-            )
-            numpy_encodings = list()
-            for encoding in validation_set_target_enc:
-                numpy_encodings.append(encoding.flatten().numpy())
-            validation_set_target_enc_cts = np.bincount(
                 np.concatenate([
                     np.concatenate(numpy_encodings),
                     np.arange(0, 170)
@@ -486,15 +447,15 @@ class DatasetUtils:
                 ])
             )
             # terms with probability ~ 1%
-            total_5 = train_set_target_enc_cts[5] + validation_set_target_enc_cts[5] + test_set_target_enc_cts[5]
-            total_40 = train_set_target_enc_cts[40] + validation_set_target_enc_cts[40] + test_set_target_enc_cts[40]
-            total_42 = train_set_target_enc_cts[42] + validation_set_target_enc_cts[42] + test_set_target_enc_cts[42]
+            total_5 = train_set_target_enc_cts[5] + test_set_target_enc_cts[5]
+            total_40 = train_set_target_enc_cts[40] + test_set_target_enc_cts[40]
+            total_42 = train_set_target_enc_cts[42] + test_set_target_enc_cts[42]
             # top 3 terms
-            total_7 = train_set_target_enc_cts[7] + validation_set_target_enc_cts[7] + test_set_target_enc_cts[7]
-            total_15 = train_set_target_enc_cts[15] + validation_set_target_enc_cts[15] + test_set_target_enc_cts[15]
-            total_12 = train_set_target_enc_cts[12] + validation_set_target_enc_cts[12] + test_set_target_enc_cts[12]
-            train_dist_goal = (segments - 2)/segments
-            val_test_dist_goal = (1 / segments)
+            total_7 = train_set_target_enc_cts[7] + test_set_target_enc_cts[7]
+            total_15 = train_set_target_enc_cts[15] + test_set_target_enc_cts[15]
+            total_12 = train_set_target_enc_cts[12] + test_set_target_enc_cts[12]
+            train_dist_goal = (segments - 1)/segments
+            test_dist_goal = (1 / segments)
             deviation_from_desired = (
                     np.abs(((segments - 2)/segments) - (train_set_target_enc_cts[5] / total_5)) +
                     np.abs(train_dist_goal - (train_set_target_enc_cts[40] / total_40)) +
@@ -502,20 +463,14 @@ class DatasetUtils:
                     np.abs(train_dist_goal - (train_set_target_enc_cts[7] / total_7)) +
                     np.abs(train_dist_goal - (train_set_target_enc_cts[15] / total_15)) +
                     np.abs(train_dist_goal - (train_set_target_enc_cts[12] / total_12)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[5] / total_5)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[40] / total_40)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[42] / total_42)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[7] / total_7)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[15] / total_15)) +
-                    np.abs(val_test_dist_goal - (validation_set_target_enc_cts[12] / total_12)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[5] / total_5)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[40] / total_40)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[42] / total_42)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[7] / total_7)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[15] / total_15)) +
-                    np.abs(val_test_dist_goal - (test_set_target_enc_cts[12] / total_12))
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[5] / total_5)) +
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[40] / total_40)) +
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[42] / total_42)) +
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[7] / total_7)) +
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[15] / total_15)) +
+                    np.abs(test_dist_goal - (test_set_target_enc_cts[12] / total_12))
             )
-            if deviation_from_desired <= 18 * 0.0001:
+            if deviation_from_desired <= 12 * 0.0001:
                 split_with_even_target_distribution = True
                 best_split_target_encodings = target_encodings
                 best_split_source_encodings = source_encodings
@@ -524,18 +479,18 @@ class DatasetUtils:
                 best_split_target_encodings = target_encodings
                 best_split_source_encodings = source_encodings
                 best_split_deviation_from_desired = deviation_from_desired
+            segment_attempt_end = time.time()
             print(f"Completed data split attempt. "
                   f"iteration:{iteration} "
-                  f"best_split_deviation_from_desired:{best_split_deviation_from_desired}")
+                  f"best_split_deviation_from_desired:{best_split_deviation_from_desired} "
+                  f"time_to_complete_attempt:{segment_attempt_end-segment_attempt_start}")
             iteration = iteration + 1
         dataset_holder.set_target_encodings(best_split_target_encodings)
         dataset_holder.set_target_encodings_train(best_split_target_encodings[0:train_size])
-        dataset_holder.set_target_encodings_validate(best_split_target_encodings[train_size:train_size+split_size])
-        dataset_holder.set_target_encodings_test(best_split_target_encodings[train_size+split_size:])
+        dataset_holder.set_target_encodings_test(best_split_target_encodings[train_size:])
         dataset_holder.set_target_encodings(best_split_source_encodings)
         dataset_holder.set_source_encodings_train(best_split_source_encodings[0:train_size])
-        dataset_holder.set_source_encodings_validate(best_split_source_encodings[train_size:train_size+split_size])
-        dataset_holder.set_source_encodings_test(best_split_source_encodings[train_size+split_size:])
+        dataset_holder.set_source_encodings_test(best_split_source_encodings[train_size:])
         return dataset_holder
 
     # use a dedicated padding token to pad batches as in Xue 2021 - ByT5 - Sec 3.1
@@ -813,7 +768,7 @@ class model_trainer_kocmi2018():
                         print(f"pred tok: {predicted_token.ljust(k, ' ')}")
                 batch_end = time.time()
                 print(f"Completed batch.")
-                print(f"epoch:{i+1}/{self.epochs+1} batch:{j+1}/{batch_ct} time:{(batch_end-batch_start) / 60 }m")
+                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} time:{(batch_end-batch_start) / 60 }m")
                 if is_remote_execution:
                     print(f"Memory usage summary:")
                     print(f"{torch.cuda.memory_summary()}")
@@ -828,13 +783,13 @@ class model_trainer_kocmi2018():
                     self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-scheduler.params"
                 )
                 torch.save(
-                    f"epoch:{i+1}/{self.epochs+1} batch:{j+1}/{batch_ct}",
+                    f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct}",
                     self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-trainer.params"
                 )
             lr_scheduler.step()
             epoch_end = time.time()
-            print(f"Completed epoch {i+1}/{self.epochs+1} in {(epoch_end - epoch_start) / 60 }m")
-            print(f"epoch:{i+1}, batch:{j+1}/{batch_ct+1}, loss:{loss}")
+            print(f"Completed epoch {i+1}/{self.epochs} in {(epoch_end - epoch_start) / 60 }m")
+            print(f"epoch:{i+1}, batch:{j+1}/{batch_ct}, loss:{loss}")
 
     def get_dataset_holder(self):
         return self.dataset_holder
@@ -869,6 +824,7 @@ class Runner:
         dataset_hyperparameters = self.runner_hyperparameters.get('dataset_transformer_hyperparameters')
         dataset_transformer = dataset_transformer_setimesbyt5(dataset_hyperparameters=dataset_hyperparameters)
         self.dataset_holder = dataset_transformer.read_dataset()
+        dataset_transformer.write_dataset_to_disk(self.dataset_holder)
 
     def load_model(self):
         model_name = self.runner_hyperparameters.get('model_name')
