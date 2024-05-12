@@ -119,7 +119,7 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
         'initial_lr': 0.002,
         'exp_decay': 0.5,
         'epochs': 10,
-        'batch_size': 10
+        'batch_size': 1
     }
 }
 
@@ -518,7 +518,10 @@ class DatasetUtils:
             padding_value):
         assert len(source_encodings) == len(target_encodings)
         total_elements = len(source_encodings)
-        batch_ct = (total_elements // batch_size) + 1
+        if batch_size != 1:
+            batch_ct = (total_elements // batch_size) + 1
+        else:
+            batch_ct = total_elements
         source_encodings_batches = list()
         target_encodings_batches = list()
         for i in range(0, batch_ct):
@@ -609,7 +612,7 @@ class PositionalEncoding(torch.nn.Module):
         """
         # Second-to-last dimension will always be sequence length
         input_size = x.shape[-2]
-        indices_to_embed = torch.tensor(np.asarray(range(0, input_size))).type(torch.LongTensor)
+        indices_to_embed = torch.tensor(np.asarray(range(0, input_size))).type(torch.LongTensor).to(device=self.emb.weight.device)
         if self.batched:
             # Use unsqueeze to form a [1, seq len, embedding dim] tensor -- broadcasting will ensure that this
             # gets added correctly across the batch
@@ -705,7 +708,8 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 torch.squeeze(
                     self.linear_output_projection_1(
                         transformer_output
-                    )
+                    ),
+                    dim=2
                 )
             )
         )
@@ -793,11 +797,17 @@ class model_trainer_kocmi2018():
                 target_batches = target_encoding_batches
             assert len(source_batches) == len(target_batches)
             batch_ct = len(source_batches)
+            batch_size = source_batches[0].shape[0]
+            samples_passed = 0
+            last_log = 0
+            last_loss = 0
+            note_step_prediction = False
+            step_prediction_at_step_percentage = 0
             for j in range(0, batch_ct):
                 batch_start = time.time()
-                batch_sequence_length = source_batches[j].shape[1]
+                batch_sequence_length = target_batches[j].shape[1]
+                step_prediction_step_number = int(batch_sequence_length * step_prediction_at_step_percentage)
                 for k in range(1, batch_sequence_length-1):
-                    step_start = time.time()
                     target_batch_slices = torch.tensor_split(target_batches[j], [k], dim=1)
                     self.model.zero_grad()
                     output_logits = self.model.forward(
@@ -805,14 +815,11 @@ class model_trainer_kocmi2018():
                         target_batch_slices[0]
                     )
                     next_word_indices = target_batch_slices[1][:, 0]
-                    loss = loss_fcn(output_logits, next_word_indices)
-                    loss.backward()
+                    last_loss = loss_fcn(output_logits, next_word_indices)
+                    last_loss.backward()
                     optimizer.step()
-                    step_end = time.time()
-                    if k % 100 == 0:
-                        print(f"Completed step.")
-                        print(f"epoch:{i+1}/{self.epochs+1}, batch:{j+1}/{batch_ct}, step:{k}/{batch_sequence_length}, "
-                              f"loss:{loss}, time_for_individual_step:{step_end-step_start}")
+                    if note_step_prediction and k == step_prediction_step_number:
+                        note_step_prediction = False
                         full_sequence = DatasetUtils.decode_target_tensor(self.dataset_holder, target_batches[j][0])
                         prefix_sequence = DatasetUtils.decode_target_tensor(
                             self.dataset_holder,
@@ -826,35 +833,42 @@ class model_trainer_kocmi2018():
                             self.dataset_holder,
                             torch.argmax(output_logits[0])
                         )
-                        print("Attempted to predict next token for step:")
+                        print(f"Next token prediction. step:{k}/{batch_sequence_length} "
+                              f"batch:{j+1}/{batch_ct} epoch:{i+1}/{self.epochs}")
                         print(f"full seq: {full_sequence}")
                         print(f"pref seq: {prefix_sequence}")
                         print(f"next tok: {next_token.ljust(k, ' ')}")
                         print(f"pred tok: {predicted_token.ljust(k, ' ')}")
-                    del target_batch_slices
-                    del output_logits
-                    del next_word_indices
-                    del loss
                 batch_end = time.time()
-                print(f"Completed batch.")
-                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} time:{(batch_end-batch_start) / 60 }m")
-                if is_remote_execution:
-                    print(f"Memory usage summary:")
-                    print(f"{torch.cuda.memory_summary()}")
-                    torch.cuda.empty_cache()
-                param_filename_tag = str(int(time.time()))
-                torch.save(
-                    self.model.state_dict(),
-                    self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-model.params"
-                )
-                torch.save(
-                    lr_scheduler.state_dict(),
-                    self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-scheduler.params"
-                )
-                torch.save(
-                    f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct}",
-                    self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-trainer.params"
-                )
+                torch.cuda.empty_cache()
+                samples_passed = samples_passed + batch_size
+                if samples_passed - last_log > 500:
+                    last_log = samples_passed
+                    note_step_prediction = True
+                    step_prediction_at_step_percentage = random.random()
+                    print(f"Completed batch.")
+                    print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} "
+                          f"time_for_batch_instance:{(batch_end-batch_start) / 60 }m loss:{last_loss}")
+                    if is_remote_execution:
+                        print(f"Memory usage summary:")
+                        print(f"{torch.cuda.memory_summary()}")
+                    param_filename_tag = str(int(time.time()))
+                    torch.save(
+                        self.model.state_dict(),
+                        self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-model.params"
+                    )
+                    torch.save(
+                        lr_scheduler.state_dict(),
+                        self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-scheduler.params"
+                    )
+                    torch.save(
+                        f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct}",
+                        self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-trainer.params"
+                    )
+                del target_batch_slices
+                del output_logits
+                del next_word_indices
+                del last_loss
             del source_batches
             del target_batches
             if is_remote_execution:
