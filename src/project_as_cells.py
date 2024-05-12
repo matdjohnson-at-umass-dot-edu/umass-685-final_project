@@ -89,16 +89,17 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
     'trainer_name': 'model_trainer_kocmi2018',
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
     'dataset_transformer_hyperparameters': {
-        'sentence_length_max_percentile': 95
+        'sentence_length_max_percentile': 95,
+        'parsed_dataset_filename': 'setimes_parsed-1715495725'
     },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
-        'd_model': 512,
+        'd_model': 256,
         'nhead': 8,
         # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
         'num_encoder_layers': 9,
         'num_decoder_layers': 3,
-        'dim_feedforward': 2048,
+        'dim_feedforward': 1796,
         'dropout': 0.1,
         'activation': torch.nn.functional.relu,
         'custom_encoder': None,
@@ -115,11 +116,13 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
         # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
         'optimizer_name': 'Adam',
         'lr_scheduler_name': 'ExponentialLR',
-        'initial_lr': 0.2,
+        'initial_lr': 0.002,
+        'exp_decay': 0.5,
         'epochs': 10,
-        'batch_size': 200
+        'batch_size': 400
     }
 }
+
 class DatasetHolder:
 
     def __init__(self):
@@ -127,16 +130,17 @@ class DatasetHolder:
         self.padding_vocabulary_type = None
         self.end_of_sequence_type = None
         self.target_vocab = None
-        self.target_vocab_tensor = None
+        self.target_vocab_array = None
         self.source_vocab = None
-        self.source_vocab_tensor = None
+        self.source_vocab_array = None
         self.target_encodings = None
         self.target_encodings_train = None
         self.target_encodings_test = None
         self.source_encodings = None
         self.source_encodings_train = None
         self.source_encodings_test = None
-        self.max_seq_obs = 0
+        self.max_src_seq_obs = 0
+        self.max_tgt_seq_obs = 0
 
     def get_unknown_vocabulary_type(self):
         return self.unknown_vocabulary_type
@@ -160,9 +164,9 @@ class DatasetHolder:
         return self.target_vocab
 
     def get_target_vocab_numpy(self):
-        if self.target_vocab_tensor is None:
-            self.target_vocab_tensor = np.array(self.target_vocab)
-        return self.target_vocab_tensor
+        if self.target_vocab_array is None:
+            self.target_vocab_array = np.array(self.target_vocab)
+        return self.target_vocab_array
 
     def set_target_vocab(self, target_vocab):
         self.target_vocab = target_vocab
@@ -171,9 +175,9 @@ class DatasetHolder:
         return self.source_vocab
 
     def get_source_vocab_numpy(self):
-        if self.source_vocab_tensor is None:
-            self.source_vocab_tensor = np.array(self.source_vocab)
-        return self.source_vocab_tensor
+        if self.source_vocab_array is None:
+            self.source_vocab_array = np.array(self.source_vocab)
+        return self.source_vocab_array
 
     def set_source_vocab(self, source_vocab):
         self.source_vocab = source_vocab
@@ -214,11 +218,17 @@ class DatasetHolder:
     def set_source_encodings_test(self, source_encodings_test):
         self.source_encodings_test = source_encodings_test
 
-    def get_max_seq_obs(self):
-        return self.max_seq_obs
+    def get_max_src_seq_obs(self):
+        return self.max_src_seq_obs
 
-    def set_max_seq_obs(self, max_seq_obs):
-        self.max_seq_obs = max_seq_obs
+    def set_max_src_seq_obs(self, max_src_seq_obs):
+        self.max_src_seq_obs = max_src_seq_obs
+
+    def get_max_tgt_seq_obs(self):
+        return self.max_tgt_seq_obs
+
+    def set_max_tgt_seq_obs(self, max_tgt_seq_obs):
+        self.max_tgt_seq_obs = max_tgt_seq_obs
 
 
 # class name matches file name
@@ -293,15 +303,19 @@ class dataset_transformer_setimesbyt5():
             source_sentences_length_limited = list()
             target_max_len = int(np.percentile(sorted(target_sentence_lengths), self.sentence_length_max_percentile))
             source_max_len = int(np.percentile(sorted(source_sentence_lengths), self.sentence_length_max_percentile))
-            max_seq_obs = 0
+            max_src_seq_obs = 0
+            max_tgt_seq_obs = 0
             for i in range(0, len(target_sentences)):
                 if len(target_sentences[i]) <= target_max_len and len(source_sentences[i]) <= source_max_len:
-                    if len(target_sentences[i]) > max_seq_obs:
-                        max_seq_obs = len(target_sentences[i])
+                    if len(source_sentences[i]) > max_src_seq_obs:
+                        max_src_seq_obs = len(source_sentences[i])
+                    if len(target_sentences[i]) > max_tgt_seq_obs:
+                        max_tgt_seq_obs = len(target_sentences[i])
                     target_sentences_length_limited.append(target_sentences[i])
                     source_sentences_length_limited.append(source_sentences[i])
             dataset_holder = DatasetHolder()
-            dataset_holder.set_max_seq_obs(max_seq_obs)
+            dataset_holder.set_max_src_seq_obs(max_src_seq_obs)
+            dataset_holder.set_max_tgt_seq_obs(max_tgt_seq_obs)
             # encode to Pytorch tensors as raw UTF-8 character vocabulary
             # method replicated from Xue 2021 - ByT5 - Introduction, sec 3.1
             unknown_vocabulary_type = '<unk>'
@@ -336,13 +350,11 @@ class dataset_transformer_setimesbyt5():
             dataset_holder.set_source_vocab(tuple(source_vocab))
             dataset_holder.set_source_encodings(source_encodings)
             dataset_holder = DatasetUtils.create_dataset_segments(dataset_holder)
+            torch.save(dataset_holder,
+                       self.datasets_directory + "/" +
+                       self.parsed_dataset_directory + "/" +
+                       "setimes_parsed-" + str(int(time.time())))
         return dataset_holder
-
-    def write_dataset_to_disk(self, dataset_holder: DatasetHolder):
-        torch.save(dataset_holder,
-                   self.datasets_directory + "/" +
-                   self.parsed_dataset_directory + "/" +
-                   "setimes_parsed-" + str(int(time.time())))
 
 
 class Utils:
@@ -565,6 +577,40 @@ class DatasetUtils:
         return "".join(decoded_tensor.tolist())
 
 
+# Implementation of positional encoding that you can use in your network
+class PositionalEncoding(torch.nn.Module):
+    def __init__(self, max_seq_len: int, d_embedding: int, batched=True, encodings_frozen=True):
+        """
+        :param d_model: dimensionality of the embedding layer to your model; since the position encodings are being
+        added to character encodings, these need to match (and will match the dimension of the subsequent Transformer
+        layer inputs/outputs)
+        :param num_positions: the number of positions that need to be encoded; the maximum sequence length this
+        module will see
+        :param batched: True if you are using batching, False otherwise
+        """
+        super().__init__()
+        # Dict size
+        self.emb = nn.Embedding(max_seq_len, d_embedding)
+        self.emb.weight.requires_grad = not encodings_frozen
+        self.batched = batched
+
+    def forward(self, x):
+        """
+        :param x: If using batching, should be [batch size, seq len, embedding dim]. Otherwise, [seq len, embedding dim]
+        :return: a tensor of the same size with positional embeddings added in
+        """
+        # Second-to-last dimension will always be sequence length
+        input_size = x.shape[-2]
+        indices_to_embed = torch.tensor(np.asarray(range(0, input_size))).type(torch.LongTensor)
+        if self.batched:
+            # Use unsqueeze to form a [1, seq len, embedding dim] tensor -- broadcasting will ensure that this
+            # gets added correctly across the batch
+            emb_unsq = self.emb(indices_to_embed).unsqueeze(0)
+            return x + emb_unsq
+        else:
+            return x + self.emb(indices_to_embed)
+
+
 # class name matches file name
 class transformer_vaswani2017(torch.nn.Transformer):
 
@@ -587,7 +633,8 @@ class transformer_vaswani2017(torch.nn.Transformer):
             device=model_hyperparameters['device'],
             dtype=model_hyperparameters['dtype']
         )
-        self.max_seq_len = model_hyperparameters['max_seq_len']
+        self.max_src_seq_len = model_hyperparameters['max_src_seq_len']
+        self.max_tgt_seq_len = model_hyperparameters['max_tgt_seq_len']
         self.src_embeddings = torch.nn.Embedding(
             model_hyperparameters['src_vocab_size'],
             model_hyperparameters['d_model']
@@ -596,8 +643,16 @@ class transformer_vaswani2017(torch.nn.Transformer):
             model_hyperparameters['tgt_vocab_size'],
             model_hyperparameters['d_model']
         )
+        self.src_pos_enc = PositionalEncoding(
+            max_seq_len=self.max_src_seq_len,
+            d_embedding=model_hyperparameters['d_model']
+        )
+        self.tgt_pos_enc = PositionalEncoding(
+            max_seq_len=self.max_tgt_seq_len,
+            d_embedding=model_hyperparameters['d_model']
+        )
         self.linear_output_projection_1 = torch.nn.Linear(
-            self.max_seq_len,
+            self.max_tgt_seq_len,
             1,
             bias=False
         )
@@ -624,8 +679,10 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 memory_is_causal: bool = False) -> torch.Tensor:
         src_embedding = self.src_embeddings(src)
         tgt_embedding = self.tgt_embeddings(tgt)
+        src_embedding_pos_enc = self.src_pos_enc(src_embedding)
+        tgt_embedding_pos_enc = self.tgt_pos_enc(tgt_embedding)
         tgt_mask = self.get_tgt_mask(tgt.shape[1])
-        transformer_output = super().forward(src_embedding, tgt_embedding, src_mask,
+        transformer_output = super().forward(src_embedding_pos_enc, tgt_embedding_pos_enc, src_mask,
                                              tgt_mask, memory_mask, src_key_padding_mask,
                                              tgt_key_padding_mask, memory_key_padding_mask,
                                              src_is_causal, tgt_is_causal, memory_is_causal)
@@ -664,6 +721,7 @@ class model_trainer_kocmi2018():
         self.trainer_hyperparameters = trainer_hyperparameters
         self.optimizer_name = self.trainer_hyperparameters['optimizer_name']
         self.initial_lr = self.trainer_hyperparameters['initial_lr']
+        self.exp_decay = self.trainer_hyperparameters['exp_decay']
         self.lr_scheduler_name = self.trainer_hyperparameters['lr_scheduler_name']
         self.epochs = self.trainer_hyperparameters['epochs']
         self.batch_size = self.trainer_hyperparameters['batch_size']
@@ -689,7 +747,7 @@ class model_trainer_kocmi2018():
         optimizer = _optimizer_class_(self.model.parameters(), lr=self.initial_lr)
         _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
-        lr_scheduler = _lr_scheduler_class_(optimizer, np.reciprocal(np.e))
+        lr_scheduler = _lr_scheduler_class_(optimizer, self.exp_decay)
         loss_fcn = torch.nn.NLLLoss()
 
         parameter_count = 0
@@ -766,6 +824,10 @@ class model_trainer_kocmi2018():
                         print(f"pref seq: {prefix_sequence}")
                         print(f"next tok: {next_token.ljust(k, ' ')}")
                         print(f"pred tok: {predicted_token.ljust(k, ' ')}")
+                    del target_batch_slices
+                    del output_logits
+                    del next_word_indices
+                    del loss
                 batch_end = time.time()
                 print(f"Completed batch.")
                 print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} time:{(batch_end-batch_start) / 60 }m")
@@ -786,6 +848,10 @@ class model_trainer_kocmi2018():
                     f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct}",
                     self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-trainer.params"
                 )
+            del source_batches
+            del target_batches
+            if is_remote_execution:
+                torch.cuda.empty_cache()
             lr_scheduler.step()
             epoch_end = time.time()
             print(f"Completed epoch {i+1}/{self.epochs} in {(epoch_end - epoch_start) / 60 }m")
@@ -824,14 +890,14 @@ class Runner:
         dataset_hyperparameters = self.runner_hyperparameters.get('dataset_transformer_hyperparameters')
         dataset_transformer = dataset_transformer_setimesbyt5(dataset_hyperparameters=dataset_hyperparameters)
         self.dataset_holder = dataset_transformer.read_dataset()
-        dataset_transformer.write_dataset_to_disk(self.dataset_holder)
 
     def load_model(self):
         model_name = self.runner_hyperparameters.get('model_name')
         model_hyperparameters = self.runner_hyperparameters.get('model_hyperparameters')
         model_hyperparameters['src_vocab_size'] = len(self.dataset_holder.get_source_vocab())
         model_hyperparameters['tgt_vocab_size'] = len(self.dataset_holder.get_target_vocab())
-        model_hyperparameters['max_seq_len'] = self.dataset_holder.get_max_seq_obs()
+        model_hyperparameters['max_src_seq_len'] = self.dataset_holder.get_max_src_seq_obs()
+        model_hyperparameters['max_tgt_seq_len'] = self.dataset_holder.get_max_tgt_seq_obs()
         model_parameter_filepath = root_filepath+"{}/{}-{}-model.params".format(
             self.model_parameter_directory,
             model_name,
