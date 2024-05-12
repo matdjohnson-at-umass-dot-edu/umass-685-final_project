@@ -123,6 +123,9 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
     }
 }
 
+loss_weights_0 = torch.tensor([0, 0, 0.244293498, 0.354252208, 0.119055746, 0.129490827, 0.234447, 0.331966255, 0.062493498, 0.200436672, 0.128134531, 0.115730135, 0.114789455, 0.111928721, 0.120232896, 0.172708905, 0.091552235, 0.18382728, 0.167772254, 0.221570123, 0.26933557, 0.207267199, 0.161156936, 0.163208063, 0.206129376, 0.1923278, 0.246448966, 0.309805116, 0.312319847, 0.341492611, 0.287077958, 0.317765776, 0.282694925, 0.328107375, 0.305618951, 0.342956521, 0.33013427, 0.36810305, 0.29995848, 0.39787945, 0.36195021, 0.231575726, 0.238716465, 0.228047462, 0.589442629, 0.428540415, 0.349514641, 0.428583838, 0.372321337, 0.35910363, 0.314836573, 0.359830778, 0.329628544, 0.358553271, 0.38731315, 0.301171514, 0.414866271, 0.454463773, 0.410552656, 0.418645272, 0.489374491, 0.60674051, 0.415410876, 0.387694004, 0.469862412, 0.387466491, 0.404244134, 0.410692024, 0.3650963, 0.328332631, 0.362047807, 0.390990331, 0.407611852, 0.353090879, 0.519082435, 0.465516001, 0.382984849, 0.382904558, 0.417591599, 0.47406963, 0.513595183, 0.561900207, 0.600687916, 0.552947486, 0.672534847, 0.775971182, 0.728910416, 0.783069437, 0.726598021, 0.870987145, 0.761128877, 0.716818395, 0.708372474, 0.70507743, 0.731312344, 0.718124592, 0.931839821, 0.675783865, 0.863679642, 0.79786095, 0.870987145, 0.888835536, 0.845831251, 0.845831251, 0.870987145, 0.831986963, 0.817320914, 0.888835536, 0.82798286, 0.931839821, 0.900147142, 0.91399143, 0.91399143, 0.956995715, 0.931839821, 1, 0.900147142, 0.870987145, 0.870987145, 1, 0.900147142, 0.888835536, 0.956995715, 0.824221583, 1, 1, 0.956995715, 1, 0.931839821, 0.931839821, 0.956995715, 0.956995715, 0.956995715, 0.888835536, 0.931839821, 1, 0.900147142, 0.91399143, 0.956995715, 0.956995715, 0.956995715, 1, 1, 1, 0.900147142, 0.931839821, 0.900147142, 0.931839821, 0.956995715, 0.91399143, 1, 0.956995715, 1, 1, 1, 1, 1, 0.956995715, 1, 1, 1, 1, 1, 1, 1, 0.931839821, 1, 0.956995715, 1, 1, 0.956995715])
+loss_weights_1 = torch.tensor([0, 0, 0.283786926, 0.387999164, 0.165094134, 0.174983875, 0.274455009, 0.366877881, 0.111487844, 0.242222071, 0.173698459, 0.16194232, 0.1610508, 0.158339569, 0.166209765, 0.215943364, 0.139027964, 0.226480689, 0.211264704, 0.262251081, 0.307520293, 0.248695632, 0.204995104, 0.206939038, 0.247617272, 0.23453697, 0.285829749, 0.345874889, 0.3482582, 0.375906387, 0.324335459, 0.353419523, 0.320181484, 0.363220667, 0.341907494, 0.377293793, 0.365141636, 0.401126157, 0.336542841, 0.429346435, 0.395294867, 0.271733788, 0.27850135, 0.268389913, 0.610898469, 0.458405049, 0.383509184, 0.458446203, 0.405123996, 0.39259705, 0.350643401, 0.393286196, 0.36466234, 0.392075452, 0.419332333, 0.337692481, 0.44544552, 0.482973645, 0.441357336, 0.449027029, 0.51605992, 0.627292358, 0.445961663, 0.419693282, 0.497567547, 0.419477659, 0.435378499, 0.44148942, 0.398276541, 0.363434152, 0.395387363, 0.422817343, 0.438570219, 0.386898527, 0.544215318, 0.493448281, 0.415230229, 0.415154135, 0.448028421, 0.501554895, 0.539014832, 0.584795422, 0.621556075, 0.576310573, 0.689648265, 0.78767899, 0.743077631, 0.794406288, 0.740886083, 0.877729392, 0.773612348, 0.731617543, 0.723613008, 0.720490164, 0.745354034, 0.732855478, 0.93540189, 0.692727489, 0.870803781, 0.808424792, 0.877729392, 0.894645021, 0.853888152, 0.853888152, 0.877729392, 0.84076737, 0.826867773, 0.894645021, 0.836972522, 0.93540189, 0.90536548, 0.918486261, 0.918486261, 0.959243131, 0.93540189, 1, 0.90536548, 0.877729392, 0.877729392, 1, 0.90536548, 0.894645021, 0.959243131, 0.833407811, 1, 1, 0.959243131, 1, 0.93540189, 0.93540189, 0.959243131, 0.959243131, 0.959243131, 0.894645021, 0.93540189, 1, 0.90536548, 0.918486261, 0.959243131, 0.959243131, 0.959243131, 1, 1, 1, 0.90536548, 0.93540189, 0.90536548, 0.93540189, 0.959243131, 0.918486261, 1, 0.959243131, 1, 1, 1, 1, 1, 0.959243131, 1, 1, 1, 1, 1, 1, 1, 0.93540189, 1, 0.959243131, 1, 1, 0.959243131])
+
 class DatasetHolder:
 
     def __init__(self):
@@ -186,37 +189,55 @@ class DatasetHolder:
         return self.target_encodings
 
     def set_target_encodings(self, target_encodings):
+        del self.target_encodings
         self.target_encodings = target_encodings
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_source_encodings(self):
         return self.source_encodings
 
     def set_source_encodings(self, source_encodings):
+        del self.source_encodings
         self.source_encodings = source_encodings
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_target_encodings_train(self):
         return self.target_encodings_train
 
     def set_target_encodings_train(self, target_encodings_train):
+        del self.target_encodings_train
         self.target_encodings_train = target_encodings_train
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_source_encodings_train(self):
         return self.source_encodings_train
 
     def set_source_encodings_train(self, source_encodings_train):
+        del self.source_encodings_train
         self.source_encodings_train = source_encodings_train
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_target_encodings_test(self):
         return self.target_encodings_test
 
     def set_target_encodings_test(self, target_encodings_test):
+        del self.target_encodings_test
         self.target_encodings_test = target_encodings_test
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_source_encodings_test(self):
         return self.source_encodings_test
 
     def set_source_encodings_test(self, source_encodings_test):
+        del self.source_encodings_test
         self.source_encodings_test = source_encodings_test
+        if is_remote_execution:
+            torch.cuda.empty_cache()
 
     def get_max_src_seq_obs(self):
         return self.max_src_seq_obs
@@ -421,8 +442,6 @@ class DatasetUtils:
             new_target_encodings.append(target_encodings[i])
         assert (len(new_source_encodings) == len(new_target_encodings)
                 == len(source_encodings) == len(target_encodings))
-        del source_encodings
-        del target_encodings
         return new_source_encodings, new_target_encodings
 
     @staticmethod
@@ -502,7 +521,7 @@ class DatasetUtils:
         dataset_holder.set_target_encodings(best_split_target_encodings)
         dataset_holder.set_target_encodings_train(best_split_target_encodings[0:train_size])
         dataset_holder.set_target_encodings_test(best_split_target_encodings[train_size:])
-        dataset_holder.set_target_encodings(best_split_source_encodings)
+        dataset_holder.set_source_encodings(best_split_source_encodings)
         dataset_holder.set_source_encodings_train(best_split_source_encodings[0:train_size])
         dataset_holder.set_source_encodings_test(best_split_source_encodings[train_size:])
         return dataset_holder
@@ -601,9 +620,9 @@ class PositionalEncoding(torch.nn.Module):
         """
         super().__init__()
         # Dict size
-        self.emb = torch.nn.Embedding(max_seq_len, d_embedding)
-        self.emb.weight.requires_grad = not encodings_frozen
+        self.emb = torch.nn.Embedding(max_seq_len, d_embedding).requires_grad_(not encodings_frozen)
         self.batched = batched
+        self.indices_cache = {}
 
     def forward(self, x):
         """
@@ -612,14 +631,22 @@ class PositionalEncoding(torch.nn.Module):
         """
         # Second-to-last dimension will always be sequence length
         input_size = x.shape[-2]
-        indices_to_embed = torch.tensor(np.asarray(range(0, input_size))).type(torch.LongTensor).to(device=self.emb.weight.device)
+        indices_to_embed = self.get_indices_tensor(input_size)
         if self.batched:
             # Use unsqueeze to form a [1, seq len, embedding dim] tensor -- broadcasting will ensure that this
             # gets added correctly across the batch
             emb_unsq = self.emb(indices_to_embed).unsqueeze(0)
-            return x + emb_unsq
+            return_value = x + emb_unsq
         else:
-            return x + self.emb(indices_to_embed)
+            return_value = x + self.emb(indices_to_embed)
+        del indices_to_embed
+        del emb_unsq
+        return return_value
+
+    def get_indices_tensor(self, size):
+        if size not in self.indices_cache:
+            self.indices_cache[size] = torch.tensor(np.arange(0, size)).to(device="cuda", dtype=torch.long)
+        return self.indices_cache[size]
 
 
 # class name matches file name
@@ -688,10 +715,8 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 src_is_causal: Optional[bool] = None,
                 tgt_is_causal: Optional[bool] = True,
                 memory_is_causal: bool = False) -> torch.Tensor:
-        src_embedding = self.src_embeddings(src)
-        tgt_embedding = self.tgt_embeddings(tgt)
-        src_embedding_pos_enc = self.src_pos_enc(src_embedding)
-        tgt_embedding_pos_enc = self.tgt_pos_enc(tgt_embedding)
+        src_embedding_pos_enc = self.src_pos_enc(self.src_embeddings(src))
+        tgt_embedding_pos_enc = self.tgt_pos_enc(self.tgt_embeddings(tgt))
         tgt_mask = self.get_tgt_mask(tgt.shape[1])
         transformer_output = super().forward(src_embedding_pos_enc, tgt_embedding_pos_enc, src_mask,
                                              tgt_mask, memory_mask, src_key_padding_mask,
@@ -713,6 +738,9 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 )
             )
         )
+        del src_embedding_pos_enc
+        del tgt_embedding_pos_enc
+        del transformer_output
         return output
 
     def set_tgt_mask_cache(self, tgt_mask_cache):
@@ -744,13 +772,15 @@ class model_trainer_kocmi2018():
 
     # pretraining is not used for monolingual english as described in Xue 2021 - ByT5 - Sec 3.1
     def run_trainer(self):
+        loss_weights = loss_weights_0
         if is_remote_execution:
             torch.cuda.empty_cache()
             self.model.cuda()
+            loss_weights = loss_weights.to(device="cuda")
         tgt_mask_cache = {}
         for i in range(1, self.model.max_tgt_seq_len + 1):
             if is_remote_execution:
-                tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i, device="cuda:0")
+                tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i, device="cuda")
             else:
                 tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i)
         self.model.set_tgt_mask_cache(tgt_mask_cache)
@@ -759,7 +789,7 @@ class model_trainer_kocmi2018():
         _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
         lr_scheduler = _lr_scheduler_class_(optimizer, self.exp_decay)
-        loss_fcn = torch.nn.NLLLoss()
+        loss_fcn = torch.nn.NLLLoss(weight=loss_weights)
 
         parameter_count = 0
         bytes_consumed = 0
@@ -781,20 +811,25 @@ class model_trainer_kocmi2018():
                     self.batch_size
                 )
             )
+            source_batches = None
+            target_batches = None
             if is_remote_execution:
                 source_batches = list()
                 target_batches = list()
                 for batch in source_encoding_batches:
-                    source_batches.append(batch.to(device="cuda:0"))
+                    source_batches.append(batch.to(device="cuda"))
                     del batch
                 del source_encoding_batches
                 for batch in target_encoding_batches:
-                    target_batches.append(batch.to(device="cuda:0"))
+                    target_batches.append(batch.to(device="cuda"))
                     del batch
                 del target_encoding_batches
+                torch.cuda.empty_cache()
             else:
                 source_batches = source_encoding_batches
                 target_batches = target_encoding_batches
+                del source_encoding_batches
+                del target_encoding_batches
             assert len(source_batches) == len(target_batches)
             batch_ct = len(source_batches)
             batch_size = source_batches[0].shape[0]
@@ -802,11 +837,12 @@ class model_trainer_kocmi2018():
             last_log = 0
             last_loss = 0
             note_step_prediction = False
-            step_prediction_at_step_percentage = 0
+            step_prediction_at_percentage_of_sample = 0
+            total_batch_time = 0
             for j in range(0, batch_ct):
                 batch_start = time.time()
                 batch_sequence_length = target_batches[j].shape[1]
-                step_prediction_step_number = int(batch_sequence_length * step_prediction_at_step_percentage)
+                step_prediction_step_number = int(batch_sequence_length * step_prediction_at_percentage_of_sample)
                 for k in range(1, batch_sequence_length-1):
                     target_batch_slices = torch.tensor_split(target_batches[j], [k], dim=1)
                     self.model.zero_grad()
@@ -839,16 +875,27 @@ class model_trainer_kocmi2018():
                         print(f"pref seq: {prefix_sequence}")
                         print(f"next tok: {next_token.ljust(k, ' ')}")
                         print(f"pred tok: {predicted_token.ljust(k, ' ')}")
+                        del full_sequence
+                        del prefix_sequence
+                        del next_token
+                        del predicted_token
+                    del target_batch_slices
+                    del output_logits
+                    del next_word_indices
+                    last_loss = last_loss.detach()
+                    if is_remote_execution:
+                        torch.cuda.empty_cache()
                 batch_end = time.time()
-                torch.cuda.empty_cache()
+                batch_time = batch_end-batch_start
+                total_batch_time = total_batch_time + batch_time
+                print(f"Completed batch.")
+                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} loss:{last_loss} "
+                      f"time_for_batch_instance:{(batch_end-batch_start)} total_batch_time:{total_batch_time} running_batch_average:{total_batch_time/(j+1)}")
                 samples_passed = samples_passed + batch_size
-                if samples_passed - last_log > 500:
+                if samples_passed - last_log > 100:
                     last_log = samples_passed
                     note_step_prediction = True
-                    step_prediction_at_step_percentage = random.random()
-                    print(f"Completed batch.")
-                    print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} "
-                          f"time_for_batch_instance:{(batch_end-batch_start) / 60 }m loss:{last_loss}")
+                    step_prediction_at_percentage_of_sample = random.random()
                     if is_remote_execution:
                         print(f"Memory usage summary:")
                         print(f"{torch.cuda.memory_summary()}")
@@ -865,10 +912,6 @@ class model_trainer_kocmi2018():
                         f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct}",
                         self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-trainer.params"
                     )
-                del target_batch_slices
-                del output_logits
-                del next_word_indices
-                del last_loss
             del source_batches
             del target_batches
             if is_remote_execution:
@@ -876,7 +919,7 @@ class model_trainer_kocmi2018():
             lr_scheduler.step()
             epoch_end = time.time()
             print(f"Completed epoch {i+1}/{self.epochs} in {(epoch_end - epoch_start) / 60 }m")
-            print(f"epoch:{i+1}, batch:{j+1}/{batch_ct}, loss:{loss}")
+            print(f"epoch:{i+1}, batch:{j+1}/{batch_ct}, loss:{last_loss}")
 
     def get_dataset_holder(self):
         return self.dataset_holder
