@@ -90,7 +90,7 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
     'dataset_transformer_hyperparameters': {
         'sentence_length_max_percentile': 95,
-        'parsed_dataset_filename': 'setimes_parsed-1715495725'
+        'parsed_dataset_filename': 'setimes_parsed-1715503734'
     },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
@@ -119,7 +119,7 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
         'initial_lr': 0.002,
         'exp_decay': 0.5,
         'epochs': 10,
-        'batch_size': 400
+        'batch_size': 10
     }
 }
 
@@ -421,6 +421,8 @@ class DatasetUtils:
             new_target_encodings.append(target_encodings[i])
         assert (len(new_source_encodings) == len(new_target_encodings)
                 == len(source_encodings) == len(target_encodings))
+        del source_encodings
+        del target_encodings
         return new_source_encodings, new_target_encodings
 
     @staticmethod
@@ -513,7 +515,6 @@ class DatasetUtils:
             source_vocab,
             target_vocab,
             batch_size: int,
-            pad_length: int,
             padding_value):
         assert len(source_encodings) == len(target_encodings)
         total_elements = len(source_encodings)
@@ -528,20 +529,27 @@ class DatasetUtils:
                 batch_range = range(i*batch_size, (i+1)*batch_size)
             elif i == batch_ct - 1:
                 batch_range = range(i*batch_size, total_elements)
+            max_src_len_for_batch = 0
+            max_tgt_len_for_batch = 0
+            for j in batch_range:
+                if len(source_encodings[j]) > max_src_len_for_batch:
+                    max_src_len_for_batch = len(source_encodings[j])
+                if len(target_encodings[j]) > max_tgt_len_for_batch:
+                    max_tgt_len_for_batch = len(target_encodings[j])
             for j in batch_range:
                 source_encoding = source_encodings[j]
                 target_encoding = target_encodings[j]
                 source_encodings_tensors.append(
                     torch.nn.functional.pad(
                         source_encoding,
-                        (0, pad_length - len(source_encoding)),
+                        (0, max_src_len_for_batch - len(source_encoding)),
                         value=source_vocab.index(padding_value)
                     )
                 )
                 target_encodings_tensors.append(
                     torch.nn.functional.pad(
                         target_encoding,
-                        (0, pad_length - len(target_encoding)),
+                        (0, max_tgt_len_for_batch - len(target_encoding)),
                         value=target_vocab.index(padding_value)
                     )
                 )
@@ -553,13 +561,13 @@ class DatasetUtils:
     def prepare_training_batches(
             dataset_holder: DatasetHolder,
             batch_size: int):
+        dataset_holder = DatasetUtils.shuffle_training_dataset(dataset_holder)
         source_encodings_batches, target_encodings_batches = DatasetUtils.prepare_batches(
             dataset_holder.get_source_encodings_train(),
             dataset_holder.get_target_encodings_train(),
             dataset_holder.get_source_vocab(),
             dataset_holder.get_target_vocab(),
             batch_size,
-            dataset_holder.get_max_seq_obs(),
             dataset_holder.get_padding_vocabulary_type()
         )
         return source_encodings_batches, target_encodings_batches
@@ -590,7 +598,7 @@ class PositionalEncoding(torch.nn.Module):
         """
         super().__init__()
         # Dict size
-        self.emb = nn.Embedding(max_seq_len, d_embedding)
+        self.emb = torch.nn.Embedding(max_seq_len, d_embedding)
         self.emb.weight.requires_grad = not encodings_frozen
         self.batched = batched
 
@@ -689,7 +697,7 @@ class transformer_vaswani2017(torch.nn.Transformer):
         transformer_output = torch.swapaxes(transformer_output, -1, -2)
         transformer_output = torch.nn.functional.pad(
             transformer_output,
-            (0, self.max_seq_len - transformer_output.shape[2]),
+            (0, self.max_tgt_seq_len - transformer_output.shape[2]),
             value=0
         )
         output = self.logsoftmax_output(
@@ -701,7 +709,6 @@ class transformer_vaswani2017(torch.nn.Transformer):
                 )
             )
         )
-        del transformer_output
         return output
 
     def set_tgt_mask_cache(self, tgt_mask_cache):
@@ -737,7 +744,7 @@ class model_trainer_kocmi2018():
             torch.cuda.empty_cache()
             self.model.cuda()
         tgt_mask_cache = {}
-        for i in range(1, self.model.max_seq_len + 1):
+        for i in range(1, self.model.max_tgt_seq_len + 1):
             if is_remote_execution:
                 tgt_mask_cache[i] = self.model.generate_square_subsequent_mask(i, device="cuda:0")
             else:
