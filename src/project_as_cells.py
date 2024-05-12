@@ -83,6 +83,44 @@ SETimesByT5Vaswani2017Kocmi2018_1 = {
     }
 }
 
+SETimesByT5Vaswani2017Kocmi2018_2 = {
+    'dataset_transformer_name': 'dataset_transformer_setimesbyt5',
+    'model_name': 'transformer_vaswani2017',
+    'trainer_name': 'model_trainer_kocmi2018',
+    # corresponds to dictionary 'get' calls in the dataset_loader constructor
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_max_percentile': 95
+    },
+    # corresponds to dictionary 'get' calls in the model constructor
+    'model_hyperparameters': {
+        'd_model': 512,
+        'nhead': 8,
+        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
+        'num_encoder_layers': 9,
+        'num_decoder_layers': 3,
+        'dim_feedforward': 2048,
+        'dropout': 0.1,
+        'activation': torch.nn.functional.relu,
+        'custom_encoder': None,
+        'custom_decoder': None,
+        'layer_norm_eps': 1e-5,
+        'batch_first': True,
+        'norm_first': False,
+        'bias': True,
+        'device': None,
+        'dtype': None
+    },
+    # corresponds to dictionary 'get' calls in the trainer constructor
+    'trainer_hyperparameters': {
+        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
+        'optimizer_name': 'Adam',
+        'lr_scheduler_name': 'ExponentialLR',
+        'initial_lr': 0.2,
+        'epochs': 10,
+        'batch_size': 200
+    }
+}
+
 
 class DatasetHolder:
 
@@ -562,13 +600,13 @@ class DatasetUtils:
     @staticmethod
     def decode_target_tensor(dataset_holder: DatasetHolder, tensor_to_decode):
         vocab = dataset_holder.get_target_vocab_numpy()
-        decoded_tensor = np.take(vocab, tensor_to_decode.flatten().numpy())
+        decoded_tensor = np.take(vocab, tensor_to_decode.detach().to(device="cpu").flatten().numpy())
         return "".join(decoded_tensor.tolist())
 
     @staticmethod
     def decode_source_tensor(dataset_holder: DatasetHolder, tensor_to_decode):
         vocab = dataset_holder.get_source_vocab_numpy()
-        decoded_tensor = np.take(vocab, tensor_to_decode.flatten().numpy())
+        decoded_tensor = np.take(vocab, tensor_to_decode.detach().to(device="cpu").flatten().numpy())
         return "".join(decoded_tensor.tolist())
 
 
@@ -816,11 +854,11 @@ class Runner:
     def __init__(self,
                  model_parameter_directory=root_filepath+"resources/model_parameters",
                  trainer_parameter_directory=root_filepath+"resources/trainer_parameters",
-                 runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_1"):
+                 runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_2"):
         self.model_parameter_directory = model_parameter_directory
         self.trainer_parameter_directory = trainer_parameter_directory
         self.runner_hyperparameters_name = runner_hyperparameters_name
-        self.runner_hyperparameters = SETimesByT5Vaswani2017Kocmi2018_1
+        self.runner_hyperparameters = SETimesByT5Vaswani2017Kocmi2018_2
         self.dataset_holder: DatasetHolder = None
         self.model = None
         self.trainer = None
@@ -865,7 +903,7 @@ class Runner:
         self.trainer.run_trainer()
 
 
-runner = Runner(runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_1")
+runner = Runner(runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_2")
 
 runner.load_dataset()
 runner.load_model()
