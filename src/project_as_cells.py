@@ -1316,7 +1316,7 @@ class model_trainer_kocmi2018():
                 batch_time = batch_end - batch_start
                 total_batch_time = total_batch_time + batch_time
                 print(f"Completed batch.")
-                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} loss:{last_loss} "
+                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} batch_size:{target_batches[j].shape[0]} loss:{last_loss} "
                       f"time_for_batch_instance:{batch_time} total_batch_time:{total_batch_time} running_batch_average:{total_batch_time/(j+1)}")
                 samples_passed = samples_passed + batch_size
                 if samples_passed - last_log > 100:
@@ -1326,6 +1326,9 @@ class model_trainer_kocmi2018():
                     if is_remote_execution:
                         print(f"Memory usage summary:")
                         print(f"{torch.cuda.memory_summary()}")
+                        torch.cuda.reset_max_memory_allocated()
+                        torch.cuda.reset_max_memory_cached()
+                        torch.cuda.reset_peak_memory_stats()
                     param_filename_tag = str(int(time.time()))
                     torch.save(
                         self.model.state_dict(),
