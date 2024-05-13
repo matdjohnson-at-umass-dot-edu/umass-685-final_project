@@ -807,7 +807,7 @@ class DatasetUtils:
         segments = 20
         split_size = len(dataset_holder.get_target_encodings()) // segments
         train_size = split_size * (segments - 1)
-        while not split_with_even_target_distribution and iteration <= 5:
+        while not split_with_even_target_distribution and iteration <= 100:
             segment_attempt_start = time.time()
             dataset_holder = DatasetUtils.shuffle_dataset(dataset_holder)
             target_encodings = dataset_holder.get_target_encodings()
@@ -948,8 +948,8 @@ class DatasetUtils:
             while not batch_end_reached:
                 if (max(abs(source_encodings[encodings_index+batch_size].shape[0] - min_source_enc_len),
                         abs(source_encodings[encodings_index+batch_size].shape[0] - max_source_enc_len)) > element_difference_limit
-                    or max(abs(target_encodings[encodings_index+batch_size].shape[0] - min_target_enc_len),
-                           abs(target_encodings[encodings_index+batch_size].shape[0] - max_target_enc_len)) > element_difference_limit):
+                        or max(abs(target_encodings[encodings_index+batch_size].shape[0] - min_target_enc_len),
+                               abs(target_encodings[encodings_index+batch_size].shape[0] - max_target_enc_len)) > element_difference_limit):
                     batch_end_reached = True
                 if batch_size == batch_size_limit - 1:
                     batch_end_reached = True
@@ -1367,11 +1367,11 @@ class Runner:
     def __init__(self,
                  model_parameter_directory=root_filepath+"resources/model_parameters",
                  trainer_parameter_directory=root_filepath+"resources/trainer_parameters",
-                 runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_2"):
+                 runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_0"):
         self.model_parameter_directory = model_parameter_directory
         self.trainer_parameter_directory = trainer_parameter_directory
         self.runner_hyperparameters_name = runner_hyperparameters_name
-        self.runner_hyperparameters = SETimesByT5Vaswani2017Kocmi2018_2
+        self.runner_hyperparameters = SETimesByT5Vaswani2017Kocmi2018_0
         self.dataset_holder: DatasetHolder = None
         self.model = None
         self.trainer = None
