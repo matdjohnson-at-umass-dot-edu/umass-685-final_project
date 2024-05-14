@@ -17,11 +17,16 @@ SETimesByT5Vaswani2017Kocmi2018_0 = {
     'dataset_transformer_name': 'dataset_transformer_setimesbyt5',
     'model_name': 'transformer_vaswani2017',
     'trainer_name': 'model_trainer_kocmi2018',
+    'latest_param_filename_tag': '1715672129',
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
-    'dataset_transformer_hyperparameters': {},
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_min_percentile': 5,
+        'sentence_length_max_percentile': 95,
+        'parsed_dataset_filename': 'setimes_parsed-1715586293'
+    },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
-        'd_model': 512,
+        'd_model': 256,
         'nhead': 8,
         # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
         'num_encoder_layers': 9,
@@ -43,9 +48,13 @@ SETimesByT5Vaswani2017Kocmi2018_0 = {
         # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
         'optimizer_name': 'Adam',
         'lr_scheduler_name': 'ExponentialLR',
-        'initial_lr': 0.2,
-        'epochs': 1,
-        'batch_size': 10
+        'initial_lr': 0.001,
+        'exp_decay': 0.5,
+        'epochs': 10,
+        'epoch_starting_index': 0,
+        'batch_size_limit': 175,
+        'element_difference_limit': 19,
+        'batch_starting_index': 765
     }
 }
 
@@ -53,48 +62,12 @@ SETimesByT5Vaswani2017Kocmi2018_1 = {
     'dataset_transformer_name': 'dataset_transformer_setimesbyt5',
     'model_name': 'transformer_vaswani2017',
     'trainer_name': 'model_trainer_kocmi2018',
-    # corresponds to dictionary 'get' calls in the dataset_loader constructor
-    'dataset_transformer_hyperparameters': {
-        'sentence_length_max_percentile': 95
-    },
-    # corresponds to dictionary 'get' calls in the model constructor
-    'model_hyperparameters': {
-        'd_model': 256,
-        'nhead': 8,
-        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
-        'num_encoder_layers': 9,
-        'num_decoder_layers': 3,
-        'dim_feedforward': 1024,
-        'dropout': 0.1,
-        'activation': torch.nn.functional.relu,
-        'custom_encoder': None,
-        'custom_decoder': None,
-        'layer_norm_eps': 1e-5,
-        'batch_first': True,
-        'norm_first': False,
-        'bias': True,
-        'device': None,
-        'dtype': None
-    },
-    # corresponds to dictionary 'get' calls in the trainer constructor
-    'trainer_hyperparameters': {
-        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
-        'optimizer_name': 'Adam',
-        'lr_scheduler_name': 'ExponentialLR',
-        'initial_lr': 0.2,
-        'epochs': 5,
-        'batch_size': 500
-    }
-}
-
-SETimesByT5Vaswani2017Kocmi2018_2 = {
-    'dataset_transformer_name': 'dataset_transformer_setimesbyt5',
-    'model_name': 'transformer_vaswani2017',
-    'trainer_name': 'model_trainer_kocmi2018',
+    'latest_param_filename_tag': '1715672186',
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
     'dataset_transformer_hyperparameters': {
         'sentence_length_min_percentile': 5,
-        'sentence_length_max_percentile': 95
+        'sentence_length_max_percentile': 95,
+        'parsed_dataset_filename': 'setimes_parsed-1715586974'
     },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
@@ -120,11 +93,58 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
         # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
         'optimizer_name': 'Adam',
         'lr_scheduler_name': 'ExponentialLR',
-        'initial_lr': 0.002,
+        'initial_lr': 0.001,
         'exp_decay': 0.5,
         'epochs': 10,
-        'batch_size_limit': 200,
-        'element_difference_limit': 19
+        'epoch_starting_index': 1,
+        'batch_size_limit': 250,
+        'element_difference_limit': 19,
+        'batch_starting_index': 0
+    }
+}
+
+SETimesByT5Vaswani2017Kocmi2018_2 = {
+    'dataset_transformer_name': 'dataset_transformer_setimesbyt5',
+    'model_name': 'transformer_vaswani2017',
+    'trainer_name': 'model_trainer_kocmi2018',
+    'latest_param_filename_tag': '1715672061',
+    # corresponds to dictionary 'get' calls in the dataset_loader constructor
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_min_percentile': 5,
+        'sentence_length_max_percentile': 95,
+        'parsed_dataset_filename': 'setimes_parsed-1715586361'
+    },
+    # corresponds to dictionary 'get' calls in the model constructor
+    'model_hyperparameters': {
+        'd_model': 128,
+        'nhead': 8,
+        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
+        'num_encoder_layers': 9,
+        'num_decoder_layers': 3,
+        'dim_feedforward': 1024,
+        'dropout': 0.1,
+        'activation': torch.nn.functional.relu,
+        'custom_encoder': None,
+        'custom_decoder': None,
+        'layer_norm_eps': 1e-5,
+        'batch_first': True,
+        'norm_first': False,
+        'bias': True,
+        'device': None,
+        'dtype': None
+    },
+    # corresponds to dictionary 'get' calls in the trainer constructor
+    'trainer_hyperparameters': {
+        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
+        'optimizer_name': 'Adam',
+        'lr_scheduler_name': 'ExponentialLR',
+        'initial_lr': 0.001,
+        'exp_decay': 0.5,
+        'epochs': 10,
+        'epoch_starting_index': 1,
+        'batch_size_limit': 400,
+        'element_difference_limit': 19,
+        'batch_starting_index': 0
     }
 }
 
@@ -1172,24 +1192,32 @@ class model_trainer_kocmi2018():
                  trainer_hyperparameters=None,
                  model_parameter_directory=None,
                  trainer_parameter_directory=None,
-                 runner_hyperparameters_name=None):
+                 runner_hyperparameters_name=None,
+                 latest_param_filename_tag=None):
         self.trainer_hyperparameters = trainer_hyperparameters
         self.optimizer_name = self.trainer_hyperparameters['optimizer_name']
         self.initial_lr = self.trainer_hyperparameters['initial_lr']
         self.exp_decay = self.trainer_hyperparameters['exp_decay']
         self.lr_scheduler_name = self.trainer_hyperparameters['lr_scheduler_name']
         self.epochs = self.trainer_hyperparameters['epochs']
+        self.epoch_starting_index = self.trainer_hyperparameters['epoch_starting_index']
         self.batch_size_limit = self.trainer_hyperparameters['batch_size_limit']
         self.element_difference_limit = self.trainer_hyperparameters['element_difference_limit']
+        self.batch_starting_index = self.trainer_hyperparameters['batch_starting_index']
         self.model_parameter_directory = model_parameter_directory
         self.trainer_parameter_directory = trainer_parameter_directory
         self.runner_hyperparameters_name = runner_hyperparameters_name
+        self.latest_param_filename_tag = latest_param_filename_tag
         self.dataset_holder = None
         self.model = None
+        self.source_encoding_batches = None
+        self.target_encoding_batches = None
+        self.optimizer = None
+        self.lr_scheduler = None
+        self.loss_fcn = None
 
-    # pretraining is not used for monolingual english as described in Xue 2021 - ByT5 - Sec 3.1
-    def run_trainer(self):
-        source_encoding_batches, target_encoding_batches = (
+    def init_trainer(self):
+        self.source_encoding_batches, self.target_encoding_batches = (
             DatasetUtils.prepare_training_batches(
                 self.dataset_holder,
                 self.batch_size_limit,
@@ -1213,13 +1241,16 @@ class model_trainer_kocmi2018():
             torch.cuda.empty_cache()
             self.model.cuda()
             loss_weights = loss_weights.to(device="cuda")
+        self.loss_fcn = torch.nn.NLLLoss(weight=loss_weights)
         _optimizer_class_ = Utils.load_python_object('torch.optim', self.optimizer_name)
-        optimizer = _optimizer_class_(self.model.parameters(), lr=self.initial_lr)
+        self.optimizer = _optimizer_class_(self.model.parameters(), lr=self.initial_lr)
         _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
-        lr_scheduler = _lr_scheduler_class_(optimizer, self.exp_decay)
-        loss_fcn = torch.nn.NLLLoss(weight=loss_weights)
-
+        self.lr_scheduler = _lr_scheduler_class_(self.optimizer, self.exp_decay)
+        scheduler_parameter_filepath = self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-scheduler.params"
+        if os.path.exists(scheduler_parameter_filepath):
+            scheduler_parameters = torch.load(scheduler_parameter_filepath)
+            self.lr_scheduler.load_state_dict(scheduler_parameters)
         parameter_count = 0
         bytes_consumed = 0
         for parameter in self.model.parameters():
@@ -1227,35 +1258,38 @@ class model_trainer_kocmi2018():
                 parameter_count = parameter_count + np.prod(parameter.data.shape)
                 bytes_consumed = bytes_consumed + parameter.data.nbytes
         gb_consumed = bytes_consumed / 1024 / 1024 / 1024
-
-        print(f"Beginning training of model with parameter count {parameter_count} "
+        print(f"Model trainer initialization complete."
+              f"Trainer will run on model with parameter count {parameter_count} "
               f"and parameter memory use {gb_consumed} GB")
-        for i in range(0, self.epochs):
+
+    # pretraining is not used for monolingual english as described in Xue 2021 - ByT5 - Sec 3.1
+    def run_trainer(self):
+        assert self.epoch_starting_index < self.epochs
+        for i in range(self.epoch_starting_index, self.epochs):
+            while self.lr_scheduler.state_dict()['last_epoch'] > i:
+                print(f"Updating lr_scheduler: {self.lr_scheduler.state_dict()}")
+                self.lr_scheduler.step()
             epoch_start = time.time()
-            print(f"Beginning epoch {i+1} of {self.epochs}")
-            if i > 0:
-                source_encoding_batches, target_encoding_batches = DatasetUtils.shuffle_lists(
-                    source_encoding_batches, target_encoding_batches
-                )
+            print(f"Beginning epoch {i+1} of {self.epochs} with scheduler {self.lr_scheduler.state_dict()}")
+            # if i > 0:
+            #     self.source_encoding_batches, self.target_encoding_batches = DatasetUtils.shuffle_lists(
+            #         self.source_encoding_batches, self.target_encoding_batches
+            #     )
             source_batches = None
             target_batches = None
             if is_remote_execution:
                 source_batches = list()
                 target_batches = list()
-                for batch in source_encoding_batches:
+                for batch in self.source_encoding_batches:
                     source_batches.append(batch.to(device="cuda"))
                     del batch
-                del source_encoding_batches
-                for batch in target_encoding_batches:
+                for batch in self.target_encoding_batches:
                     target_batches.append(batch.to(device="cuda"))
                     del batch
-                del target_encoding_batches
                 torch.cuda.empty_cache()
             else:
-                source_batches = source_encoding_batches
-                target_batches = target_encoding_batches
-                del source_encoding_batches
-                del target_encoding_batches
+                source_batches = self.source_encoding_batches
+                target_batches = self.target_encoding_batches
             assert len(source_batches) == len(target_batches)
             batch_ct = len(source_batches)
             batch_size = source_batches[0].shape[0]
@@ -1265,10 +1299,13 @@ class model_trainer_kocmi2018():
             note_step_prediction = False
             step_prediction_at_percentage_of_sample = 0
             total_batch_time = 0
-            for j in range(0, batch_ct):
+            assert self.batch_starting_index < batch_ct
+            for j in range(self.batch_starting_index, batch_ct):
                 batch_start = time.time()
                 batch_sequence_length = target_batches[j].shape[1]
                 step_prediction_step_number = int(batch_sequence_length * step_prediction_at_percentage_of_sample)
+                print(f"Starting batch.")
+                print(f"epoch:{i+1}/{self.epochs} batch:{j+1}/{batch_ct} batch_size:{target_batches[j].shape[0]}")
                 for k in range(1, batch_sequence_length-1):
                     target_batch_slices = torch.tensor_split(target_batches[j], [k], dim=1)
                     self.model.zero_grad()
@@ -1277,9 +1314,9 @@ class model_trainer_kocmi2018():
                         target_batch_slices[0]
                     )
                     next_word_indices = target_batch_slices[1][:, 0]
-                    last_loss = loss_fcn(output_logits, next_word_indices)
+                    last_loss = self.loss_fcn(output_logits, next_word_indices)
                     last_loss.backward()
-                    optimizer.step()
+                    self.optimizer.step()
                     if note_step_prediction and k == step_prediction_step_number:
                         note_step_prediction = False
                         full_sequence = DatasetUtils.decode_target_tensor(self.dataset_holder, target_batches[j][0])
@@ -1335,7 +1372,7 @@ class model_trainer_kocmi2018():
                         self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-model.params"
                     )
                     torch.save(
-                        lr_scheduler.state_dict(),
+                        self.lr_scheduler.state_dict(),
                         self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + param_filename_tag + "-scheduler.params"
                     )
                     torch.save(
@@ -1347,7 +1384,7 @@ class model_trainer_kocmi2018():
             gc.collect()
             if is_remote_execution:
                 torch.cuda.empty_cache()
-            lr_scheduler.step()
+            self.lr_scheduler.step()
             epoch_end = time.time()
             print(f"Completed epoch {i+1}/{self.epochs} in {(epoch_end - epoch_start) / 60 }m")
             print(f"epoch:{i+1}, batch:{j+1}/{batch_ct}, loss:{last_loss}")
@@ -1378,6 +1415,9 @@ class Runner:
         self.dataset_holder: DatasetHolder = None
         self.model = None
         self.trainer = None
+        self.latest_param_filename_tag = None
+        if 'latest_param_filename_tag' in self.runner_hyperparameters:
+            self.latest_param_filename_tag = self.runner_hyperparameters['latest_param_filename_tag']
         print(f"Initialized runner {runner_hyperparameters_name} with parameters {self.runner_hyperparameters}")
 
     def load_dataset(self):
@@ -1387,17 +1427,12 @@ class Runner:
         self.dataset_holder = dataset_transformer.read_dataset()
 
     def load_model(self):
-        model_name = self.runner_hyperparameters.get('model_name')
         model_hyperparameters = self.runner_hyperparameters.get('model_hyperparameters')
         model_hyperparameters['src_vocab_size'] = len(self.dataset_holder.get_source_vocab())
         model_hyperparameters['tgt_vocab_size'] = len(self.dataset_holder.get_target_vocab())
         model_hyperparameters['max_src_seq_len'] = self.dataset_holder.get_max_src_seq_obs()
         model_hyperparameters['max_tgt_seq_len'] = self.dataset_holder.get_max_tgt_seq_obs()
-        model_parameter_filepath = root_filepath+"{}/{}-{}-model.params".format(
-            self.model_parameter_directory,
-            model_name,
-            self.runner_hyperparameters_name
-        )
+        model_parameter_filepath = self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-model.params"
         self.model = transformer_vaswani2017(model_hyperparameters=model_hyperparameters)
         if os.path.exists(model_parameter_filepath):
             model_parameters = torch.load(model_parameter_filepath)
@@ -1409,12 +1444,14 @@ class Runner:
             trainer_hyperparameters=trainer_hyperparameters,
             model_parameter_directory=self.model_parameter_directory,
             trainer_parameter_directory=self.trainer_parameter_directory,
-            runner_hyperparameters_name=self.runner_hyperparameters_name
+            runner_hyperparameters_name=self.runner_hyperparameters_name,
+            latest_param_filename_tag=self.latest_param_filename_tag
         )
 
     def run_trainer(self):
         self.trainer.set_dataset_holder(self.dataset_holder)
         self.trainer.set_model(self.model)
+        self.trainer.init_trainer()
         self.trainer.run_trainer()
 
 
