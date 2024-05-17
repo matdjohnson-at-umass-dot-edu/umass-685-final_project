@@ -1160,7 +1160,7 @@ class dataset_transformer_setimesbyt5():
             source_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
             target_encodings = list()
             source_encodings = list()
-            for entry in en_sentences_length_limited:
+            for entry in target_sentences_length_limited:
                 encoding = list()
                 for character in entry:
                     if character not in target_vocab:
@@ -1801,9 +1801,8 @@ class model_trainer_kocmi2018():
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
         self.lr_scheduler = _lr_scheduler_class_(self.optimizer, self.exp_decay)
         scheduler_parameter_filepath = self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-scheduler.params"
-        if os.path.exists(scheduler_parameter_filepath):
-            scheduler_parameters = torch.load(scheduler_parameter_filepath)
-            self.lr_scheduler.load_state_dict(scheduler_parameters)
+        scheduler_parameters = torch.load(scheduler_parameter_filepath)
+        self.lr_scheduler.load_state_dict(scheduler_parameters)
         parameter_count = 0
         bytes_consumed = 0
         for parameter in self.model.parameters():
@@ -1987,9 +1986,8 @@ class Runner:
         model_hyperparameters['max_tgt_seq_len'] = self.dataset_holder.get_max_tgt_seq_obs()
         model_parameter_filepath = self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-model.params"
         self.model = transformer_vaswani2017(model_hyperparameters=model_hyperparameters)
-        if os.path.exists(model_parameter_filepath):
-            model_parameters = torch.load(model_parameter_filepath)
-            self.model.load_state_dict(model_parameters)
+        model_parameters = torch.load(model_parameter_filepath)
+        self.model.load_state_dict(model_parameters)
 
     def load_trainer(self):
         trainer_hyperparameters = self.runner_hyperparameters.get('trainer_hyperparameters')
