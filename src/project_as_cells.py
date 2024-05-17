@@ -22,8 +22,8 @@ SETimesByT5Vaswani2017Kocmi2018_0 = {
     # corresponds to dictionary 'get' calls in the dataset_loader constructor
     'dataset_transformer_hyperparameters': {
         'sentence_length_min_percentile': 5,
-        'sentence_length_max_percentile': 95,
-        'parsed_dataset_filename': 'setimes_parsed-1715586293'
+        'sentence_length_max_percentile': 95
+        # 'parsed_dataset_filename': 'setimes_parsed-1715586293'
     },
     # corresponds to dictionary 'get' calls in the model constructor
     'model_hyperparameters': {
@@ -1246,7 +1246,7 @@ class dataset_transformer_newscommentary:
             en_sentences_length_limited = list()
             kk_sentences_length_limited = list()
             en_min_len = int(np.percentile(sorted(en_sentence_lengths), self.sentence_length_min_percentile))
-            en_max_len = int(np.percentile(sorted(en_sentence_lengths), self.sentence_length_max_percentile))
+            en_max_len = 256 # matches max length from SETimes
             kk_min_len = int(np.percentile(sorted(kk_sentence_lengths), self.sentence_length_min_percentile))
             kk_max_len = int(np.percentile(sorted(kk_sentence_lengths), self.sentence_length_max_percentile))
             max_src_seq_obs = 0
@@ -1284,8 +1284,6 @@ class dataset_transformer_newscommentary:
             for entry in kk_sentences_length_limited:
                 encoding = list()
                 for character in entry:
-                    if character not in kk_vocab:
-                        kk_vocab.append(character)
                     encoding.append(kk_vocab.index(character))
                 encoding.append(kk_vocab.index(end_of_sequence_vocabulary_type))
                 kk_encodings.append(torch.tensor(encoding))
@@ -1298,7 +1296,7 @@ class dataset_transformer_newscommentary:
             torch.save(dataset_holder,
                        self.datasets_directory + "/" +
                        self.parsed_dataset_directory + "/" +
-                       "setimes_parsed-" + str(int(time.time())))
+                       "SMTNewsCommentary_parsed-" + str(int(time.time())))
         return dataset_holder
 
 
@@ -1600,13 +1598,15 @@ class DatasetUtils:
         )
 
         source_vocab_counts = {}
+        for i in range(0, len(dataset_holder.get_source_vocab())):
+            source_vocab_counts[i] = 0
         for source_encoding_batch in source_encodings_batches:
             for source_encoding in source_encoding_batch:
                 for character in source_encoding:
-                    if character.item() not in source_vocab_counts:
-                        source_vocab_counts[character.item()] = 0
                     source_vocab_counts[character.item()] = source_vocab_counts[character.item()] + 1
         target_vocab_counts = {}
+        for i in range(0, len(dataset_holder.get_target_vocab())):
+            target_vocab_counts[i] = 0
         for target_vocab_batch in target_encodings_batches:
             for target_encoding in target_vocab_batch:
                 for character in target_encoding:
@@ -1737,17 +1737,31 @@ class transformer_vaswani2017(torch.nn.Transformer):
         del transformer_output
         return output
 
-    def set_embeddings_for_transfer_learning(self, source_embeddings_dim):
-        del self.src_embeddings
-        self.src_embeddings = torch.nn.Embedding(
-            source_embeddings_dim,
-            self.model_hyperparameters['d_model']
-        )
+    def freeze_target_embeddings(self):
         del self.tgt_embeddings
         self.tgt_embeddings = torch.nn.Embedding(
             self.model_hyperparameters['tgt_vocab_size'],
             self.model_hyperparameters['d_model']
         ).requires_grad_(False)
+        del self.linear_output_projection_1
+        self.linear_output_projection_1 = torch.nn.Linear(
+            self.max_tgt_seq_len,
+            1,
+            bias=False
+        ).requires_grad_(False)
+        del self.linear_output_projection_2
+        self.linear_output_projection_2 = torch.nn.Linear(
+            self.model_hyperparameters['d_model'],
+            self.model_hyperparameters['tgt_vocab_size'],
+            bias=False
+        ).requires_grad_(False)
+
+    def set_source_embeddings_for_transfer_learning(self, source_embeddings_dim):
+        del self.src_embeddings
+        self.src_embeddings = torch.nn.Embedding(
+            source_embeddings_dim,
+            self.model_hyperparameters['d_model']
+        )
 
 
 class model_trainer_kocmi2018():
@@ -1792,10 +1806,13 @@ class model_trainer_kocmi2018():
         # this ensures that vocab counts include padding and eos tokens
         loss_weights = list()
         for vocab_term in self.dataset_holder.get_target_vocab():
-            loss_weights.append(
-                1 / self.dataset_holder.get_target_vocab_counts()[
+            weight_for_term = 0
+            if self.dataset_holder.get_target_vocab_counts()[self.dataset_holder.get_target_vocab().index(vocab_term)] != 0:
+                weight_for_term = 1 / self.dataset_holder.get_target_vocab_counts()[
                     self.dataset_holder.get_target_vocab().index(vocab_term)
                 ]
+            loss_weights.append(
+                weight_for_term
             )
         # set padding to have 0 weight
         loss_weights[
@@ -1811,9 +1828,9 @@ class model_trainer_kocmi2018():
         _lr_scheduler_class_ = Utils.load_python_object('torch.optim.lr_scheduler', self.lr_scheduler_name)
         # constructor call assumes that the scheduler is the ExponentialLR scheduler
         self.lr_scheduler = _lr_scheduler_class_(self.optimizer, self.exp_decay)
-        scheduler_parameter_filepath = self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-scheduler.params"
-        scheduler_parameters = torch.load(scheduler_parameter_filepath)
-        self.lr_scheduler.load_state_dict(scheduler_parameters)
+        # scheduler_parameter_filepath = self.trainer_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-scheduler.params"
+        # scheduler_parameters = torch.load(scheduler_parameter_filepath)
+        # self.lr_scheduler.load_state_dict(scheduler_parameters)
         parameter_count = 0
         bytes_consumed = 0
         for parameter in self.model.parameters():
@@ -1994,12 +2011,13 @@ class Runner:
         model_hyperparameters['src_vocab_size'] = 91
         model_hyperparameters['tgt_vocab_size'] = 81
         model_hyperparameters['max_src_seq_len'] = self.dataset_holder.get_max_src_seq_obs()
-        model_hyperparameters['max_tgt_seq_len'] = self.dataset_holder.get_max_tgt_seq_obs()
+        model_hyperparameters['max_tgt_seq_len'] = 256
         model_parameter_filepath = self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-model.params"
         self.model = transformer_vaswani2017(model_hyperparameters=model_hyperparameters)
+        self.model.freeze_target_embeddings()
         model_parameters = torch.load(model_parameter_filepath)
         self.model.load_state_dict(model_parameters)
-        self.model.set_embeddings_for_transfer_learning(len(self.dataset_holder.get_source_vocab()))
+        self.model.set_source_embeddings_for_transfer_learning(len(self.dataset_holder.get_source_vocab()))
 
     def load_trainer(self):
         trainer_hyperparameters = self.runner_hyperparameters.get('trainer_hyperparameters')
