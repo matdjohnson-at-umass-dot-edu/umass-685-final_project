@@ -612,8 +612,8 @@ turkish_char_mappings = {
 }
 
 enkk_english_character_mappings = {
-    ord("Ġ"): ord("Ġ"),
-    ord("ġ"): ord("ġ"),
+    ord("Ġ"): ord("\u0120"),
+    ord("ġ"): ord("\u0120"),
     ord("Ģ"): ord("Ģ"),
     ord("N"): ord("N"),
     ord("E"): ord("E"),
@@ -688,54 +688,54 @@ enkk_english_character_mappings = {
     ord("P"): ord("P"),
     ord("5"): ord("5"),
     ord("7"): ord("7"),
-    ord("$"): ord("Ġ"),
-    ord("€"): ord("Ġ"),
-    ord("ñ"): ord("Ġ"),
-    ord("é"): ord("Ġ"),
-    ord("è"): ord("Ġ"),
-    ord("¥"): ord("Ġ"),
-    ord("&"): ord("Ġ"),
-    ord("—"): ord("Ġ"),
+    ord("$"): ord("\u0120"),
+    ord("€"): ord("\u0120"),
+    ord("ñ"): ord("\u0120"),
+    ord("é"): ord("\u0120"),
+    ord("è"): ord("\u0120"),
+    ord("¥"): ord("\u0120"),
+    ord("&"): ord("\u0120"),
+    ord("—"): ord("\u0120"),
     ord("Z"): ord("Z"),
     ord("X"): ord("X"),
-    ord("ä"): ord("Ġ"),
-    ord("à"): ord("Ġ"),
-    ord("/"): ord("Ġ"),
+    ord("ä"): ord("\u0120"),
+    ord("à"): ord("\u0120"),
+    ord("/"): ord("\u0120"),
     ord("Q"): ord("Q"),
-    ord("ç"): ord("Ġ"),
-    ord("É"): ord("Ġ"),
-    ord("!"): ord("Ġ"),
-    ord("á"): ord("Ġ"),
-    ord("š"): ord("Ġ"),
-    ord("í"): ord("Ġ"),
-    ord("ó"): ord("Ġ"),
-    ord("ğ"): ord("Ġ"),
-    ord("â"): ord("Ġ"),
-    ord("ü"): ord("Ġ"),
-    ord("ö"): ord("Ġ"),
-    ord("‘"): ord("Ġ"),
-    ord("#"): ord("Ġ"),
-    ord("ï"): ord("Ġ"),
-    ord("["): ord("Ġ"),
-    ord("]"): ord("Ġ"),
-    ord("…"): ord("Ġ"),
-    ord("ð"): ord("Ġ"),
-    ord("ń"): ord("Ġ"),
+    ord("ç"): ord("\u0120"),
+    ord("É"): ord("\u0120"),
+    ord("!"): ord("\u0120"),
+    ord("á"): ord("\u0120"),
+    ord("š"): ord("\u0120"),
+    ord("í"): ord("\u0120"),
+    ord("ó"): ord("\u0120"),
+    ord("ğ"): ord("\u0120"),
+    ord("â"): ord("\u0120"),
+    ord("ü"): ord("\u0120"),
+    ord("ö"): ord("\u0120"),
+    ord("‘"): ord("\u0120"),
+    ord("#"): ord("\u0120"),
+    ord("ï"): ord("\u0120"),
+    ord("["): ord("\u0120"),
+    ord("]"): ord("\u0120"),
+    ord("…"): ord("\u0120"),
+    ord("ð"): ord("\u0120"),
+    ord("ń"): ord("\u0120"),
     ord("'"): ord("'"),
-    ord("Á"): ord("Ġ"),
-    ord("î"): ord("Ġ"),
-    ord("ŏ"): ord("Ġ"),
-    ord("ê"): ord("Ġ"),
-    ord("+"): ord("Ġ"),
-    ord("ł"): ord("Ġ"),
-    ord("ô"): ord("Ġ"),
-    ord("£"): ord("Ġ"),
-    ord("Š"): ord("Ġ")
+    ord("Á"): ord("\u0120"),
+    ord("î"): ord("\u0120"),
+    ord("ŏ"): ord("\u0120"),
+    ord("ê"): ord("\u0120"),
+    ord("+"): ord("\u0120"),
+    ord("ł"): ord("\u0120"),
+    ord("ô"): ord("\u0120"),
+    ord("£"): ord("\u0120"),
+    ord("Š"): ord("\u0120")
 }
 
 enkk_kazakh_character_mappings = {
-    ord("Ġ"): ord("Ġ"),
-    ord("ġ"): ord("ġ"),
+    ord("Ġ"): ord("\u0120"),
+    ord("ġ"): ord("\u0120"),
     ord("Ģ"): ord("Ģ"),
     ord("Н"): ord("Н"),
     ord("Ь"): ord("Ь"),
@@ -841,7 +841,7 @@ enkk_kazakh_character_mappings = {
     ord("u"): ord("u"),
     ord("d"): ord("d"),
     ord("M"): ord("M"),
-    ord("’"): ord("Ġ"),
+    ord("’"): ord("\u0120"),
     ord("s"): ord("s"),
     ord("A"): ord("A"),
     ord("7"): ord("7"),
@@ -861,9 +861,9 @@ enkk_kazakh_character_mappings = {
     ord("Ү"): ord("Ү"),
     ord("Ғ"): ord("Ғ"),
     ord("ч"): ord("ч"),
-    ord("Ң"): ord("Ġ"),
+    ord("Ң"): ord("\u0120"),
     ord("ъ"): ord("ъ"),
-    ord("K"): ord("Ġ"),
+    ord("K"): ord("\u0120"),
     ord("H"): ord("H"),
     ord("m"): ord("m"),
     ord("R"): ord("R"),
@@ -877,44 +877,44 @@ enkk_kazakh_character_mappings = {
     ord("E"): ord("E"),
     ord("Ц"): ord("Ц"),
     ord("k"): ord("k"),
-    ord("$"): ord("Ġ"),
+    ord("$"): ord("\u0120"),
     ord("v"): ord("v"),
-    ord("¥"): ord("Ġ"),
+    ord("¥"): ord("\u0120"),
     ord("У"): ord("У"),
     ord("g"): ord("g"),
     ord("Ы"): ord("Ы"),
     ord("w"): ord("w"),
-    ord("q"): ord("Ġ"),
-    ord("'"): ord("Ġ"),
-    ord("Y"): ord("Ġ"),
+    ord("q"): ord("\u0120"),
+    ord("'"): ord("\u0120"),
+    ord("Y"): ord("\u0120"),
     ord("U"): ord("U"),
     ord("O"): ord("O"),
     ord("/"): ord("/"),
-    ord("é"): ord("Ġ"),
-    ord("!"): ord("Ġ"),
+    ord("é"): ord("\u0120"),
+    ord("!"): ord("\u0120"),
     ord("V"): ord("V"),
     ord("\""): ord("\""),
-    ord("ü"): ord("Ġ"),
-    ord("Z"): ord("Ġ"),
+    ord("ü"): ord("\u0120"),
+    ord("Z"): ord("\u0120"),
     ord("W"): ord("W"),
-    ord("#"): ord("Ġ"),
+    ord("#"): ord("\u0120"),
     ord("щ"): ord("щ"),
-    ord("J"): ord("Ġ"),
-    ord("&"): ord("Ġ"),
-    ord("Q"): ord("Ġ"),
-    ord("X"): ord("Ġ"),
-    ord("�"): ord("Ġ"),
-    ord("ä"): ord("Ġ"),
-    ord("ё"): ord("Ġ"),
-    ord("ə"): ord("Ġ"),
-    ord("£"): ord("Ġ"),
-    ord("j"): ord("Ġ"),
-    ord("É"): ord("Ġ"),
-    ord("["): ord("Ġ"),
-    ord("]"): ord("Ġ"),
-    ord("€"): ord("Ġ"),
-    ord("\u200b"): ord("Ġ"),
-    ord("+"): ord("Ġ")
+    ord("J"): ord("\u0120"),
+    ord("&"): ord("\u0120"),
+    ord("Q"): ord("\u0120"),
+    ord("X"): ord("\u0120"),
+    ord("�"): ord("\u0120"),
+    ord("ä"): ord("\u0120"),
+    ord("ё"): ord("\u0120"),
+    ord("ə"): ord("\u0120"),
+    ord("£"): ord("\u0120"),
+    ord("j"): ord("\u0120"),
+    ord("É"): ord("\u0120"),
+    ord("["): ord("\u0120"),
+    ord("]"): ord("\u0120"),
+    ord("€"): ord("\u0120"),
+    ord("\u200b"): ord("\u0120"),
+    ord("+"): ord("\u0120")
 }
 
 class DatasetHolder:
@@ -1271,15 +1271,13 @@ class dataset_transformer_newscommentary:
             dataset_holder.set_unknown_vocabulary_type(unknown_vocabulary_type)
             dataset_holder.set_padding_vocabulary_type(padding_vocabulary_type)
             dataset_holder.set_end_of_sequence_vocabulary_type(end_of_sequence_vocabulary_type)
-            en_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
+            en_vocab = tuple(['Ġ', 'ġ', 'Ģ', 'K', 'o', 's', 'v', ' ', 'i', 't', 'a', 'k', 'n', 'g', 'h', 'r', 'd', 'l', 'p', 'c', 'e', 'f', 'u', 'm', '.', 'B', 'y', 'M', 'j', 'S', 'E', 'T', 'P', '-', '2', '1', '/', '0', '3', 'F', 'w', ',', 'b', "'", '[', 'R', ']', 'O', 'x', '"', 'H', 'I', 'D', '9', 'A', '6', ':', 'q', 'V', ';', '7', 'z', '%', 'W', 'J', 'L', 'G', 'C', 'N', '5', '4', 'U', 'Z', '(', ')', '8', '?', 'Y', '$', 'Q', 'X'])
             kk_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
             en_encodings = list()
             kk_encodings = list()
             for entry in en_sentences_length_limited:
                 encoding = list()
                 for character in entry:
-                    if character not in en_vocab:
-                        en_vocab.append(character)
                     encoding.append(en_vocab.index(character))
                 encoding.append(en_vocab.index(end_of_sequence_vocabulary_type))
                 en_encodings.append(torch.tensor(encoding))
@@ -1654,6 +1652,7 @@ class transformer_vaswani2017(torch.nn.Transformer):
             device=model_hyperparameters['device'],
             dtype=model_hyperparameters['dtype']
         )
+        self.model_hyperparameters = model_hyperparameters
         # add one for the end of sequence token
         self.max_src_seq_len = model_hyperparameters['max_src_seq_len'] + 1
         self.max_tgt_seq_len = model_hyperparameters['max_tgt_seq_len'] + 1
@@ -1737,6 +1736,18 @@ class transformer_vaswani2017(torch.nn.Transformer):
         del tgt_embedding_pos_enc
         del transformer_output
         return output
+
+    def set_embeddings_for_transfer_learning(self, source_embeddings_dim):
+        del self.src_embeddings
+        self.src_embeddings = torch.nn.Embedding(
+            source_embeddings_dim,
+            self.model_hyperparameters['d_model']
+        )
+        del self.tgt_embeddings
+        self.tgt_embeddings = torch.nn.Embedding(
+            self.model_hyperparameters['tgt_vocab_size'],
+            self.model_hyperparameters['d_model']
+        ).requires_grad_(False)
 
 
 class model_trainer_kocmi2018():
@@ -1980,14 +1991,15 @@ class Runner:
 
     def load_model(self):
         model_hyperparameters = self.runner_hyperparameters.get('model_hyperparameters')
-        model_hyperparameters['src_vocab_size'] = len(self.dataset_holder.get_source_vocab())
-        model_hyperparameters['tgt_vocab_size'] = len(self.dataset_holder.get_target_vocab())
+        model_hyperparameters['src_vocab_size'] = 91
+        model_hyperparameters['tgt_vocab_size'] = 81
         model_hyperparameters['max_src_seq_len'] = self.dataset_holder.get_max_src_seq_obs()
         model_hyperparameters['max_tgt_seq_len'] = self.dataset_holder.get_max_tgt_seq_obs()
         model_parameter_filepath = self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-model.params"
         self.model = transformer_vaswani2017(model_hyperparameters=model_hyperparameters)
         model_parameters = torch.load(model_parameter_filepath)
         self.model.load_state_dict(model_parameters)
+        self.model.set_embeddings_for_transfer_learning(len(self.dataset_holder.get_source_vocab()))
 
     def load_trainer(self):
         trainer_hyperparameters = self.runner_hyperparameters.get('trainer_hyperparameters')
