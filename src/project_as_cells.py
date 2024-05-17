@@ -6,6 +6,7 @@ from typing import Optional
 import time
 import os
 import gc
+from xml.etree import ElementTree
 
 
 root_filepath = "src/main/"
@@ -148,8 +149,140 @@ SETimesByT5Vaswani2017Kocmi2018_2 = {
     }
 }
 
-loss_weights_0 = torch.tensor([0, 0, 0.244293498, 0.354252208, 0.119055746, 0.129490827, 0.234447, 0.331966255, 0.062493498, 0.200436672, 0.128134531, 0.115730135, 0.114789455, 0.111928721, 0.120232896, 0.172708905, 0.091552235, 0.18382728, 0.167772254, 0.221570123, 0.26933557, 0.207267199, 0.161156936, 0.163208063, 0.206129376, 0.1923278, 0.246448966, 0.309805116, 0.312319847, 0.341492611, 0.287077958, 0.317765776, 0.282694925, 0.328107375, 0.305618951, 0.342956521, 0.33013427, 0.36810305, 0.29995848, 0.39787945, 0.36195021, 0.231575726, 0.238716465, 0.228047462, 0.589442629, 0.428540415, 0.349514641, 0.428583838, 0.372321337, 0.35910363, 0.314836573, 0.359830778, 0.329628544, 0.358553271, 0.38731315, 0.301171514, 0.414866271, 0.454463773, 0.410552656, 0.418645272, 0.489374491, 0.60674051, 0.415410876, 0.387694004, 0.469862412, 0.387466491, 0.404244134, 0.410692024, 0.3650963, 0.328332631, 0.362047807, 0.390990331, 0.407611852, 0.353090879, 0.519082435, 0.465516001, 0.382984849, 0.382904558, 0.417591599, 0.47406963, 0.513595183, 0.561900207, 0.600687916, 0.552947486, 0.672534847, 0.775971182, 0.728910416, 0.783069437, 0.726598021, 0.870987145, 0.761128877, 0.716818395, 0.708372474, 0.70507743, 0.731312344, 0.718124592, 0.931839821, 0.675783865, 0.863679642, 0.79786095, 0.870987145, 0.888835536, 0.845831251, 0.845831251, 0.870987145, 0.831986963, 0.817320914, 0.888835536, 0.82798286, 0.931839821, 0.900147142, 0.91399143, 0.91399143, 0.956995715, 0.931839821, 1, 0.900147142, 0.870987145, 0.870987145, 1, 0.900147142, 0.888835536, 0.956995715, 0.824221583, 1, 1, 0.956995715, 1, 0.931839821, 0.931839821, 0.956995715, 0.956995715, 0.956995715, 0.888835536, 0.931839821, 1, 0.900147142, 0.91399143, 0.956995715, 0.956995715, 0.956995715, 1, 1, 1, 0.900147142, 0.931839821, 0.900147142, 0.931839821, 0.956995715, 0.91399143, 1, 0.956995715, 1, 1, 1, 1, 1, 0.956995715, 1, 1, 1, 1, 1, 1, 1, 0.931839821, 1, 0.956995715, 1, 1, 0.956995715])
-loss_weights_1 = torch.tensor([0, 0, 0.283786926, 0.387999164, 0.165094134, 0.174983875, 0.274455009, 0.366877881, 0.111487844, 0.242222071, 0.173698459, 0.16194232, 0.1610508, 0.158339569, 0.166209765, 0.215943364, 0.139027964, 0.226480689, 0.211264704, 0.262251081, 0.307520293, 0.248695632, 0.204995104, 0.206939038, 0.247617272, 0.23453697, 0.285829749, 0.345874889, 0.3482582, 0.375906387, 0.324335459, 0.353419523, 0.320181484, 0.363220667, 0.341907494, 0.377293793, 0.365141636, 0.401126157, 0.336542841, 0.429346435, 0.395294867, 0.271733788, 0.27850135, 0.268389913, 0.610898469, 0.458405049, 0.383509184, 0.458446203, 0.405123996, 0.39259705, 0.350643401, 0.393286196, 0.36466234, 0.392075452, 0.419332333, 0.337692481, 0.44544552, 0.482973645, 0.441357336, 0.449027029, 0.51605992, 0.627292358, 0.445961663, 0.419693282, 0.497567547, 0.419477659, 0.435378499, 0.44148942, 0.398276541, 0.363434152, 0.395387363, 0.422817343, 0.438570219, 0.386898527, 0.544215318, 0.493448281, 0.415230229, 0.415154135, 0.448028421, 0.501554895, 0.539014832, 0.584795422, 0.621556075, 0.576310573, 0.689648265, 0.78767899, 0.743077631, 0.794406288, 0.740886083, 0.877729392, 0.773612348, 0.731617543, 0.723613008, 0.720490164, 0.745354034, 0.732855478, 0.93540189, 0.692727489, 0.870803781, 0.808424792, 0.877729392, 0.894645021, 0.853888152, 0.853888152, 0.877729392, 0.84076737, 0.826867773, 0.894645021, 0.836972522, 0.93540189, 0.90536548, 0.918486261, 0.918486261, 0.959243131, 0.93540189, 1, 0.90536548, 0.877729392, 0.877729392, 1, 0.90536548, 0.894645021, 0.959243131, 0.833407811, 1, 1, 0.959243131, 1, 0.93540189, 0.93540189, 0.959243131, 0.959243131, 0.959243131, 0.894645021, 0.93540189, 1, 0.90536548, 0.918486261, 0.959243131, 0.959243131, 0.959243131, 1, 1, 1, 0.90536548, 0.93540189, 0.90536548, 0.93540189, 0.959243131, 0.918486261, 1, 0.959243131, 1, 1, 1, 1, 1, 0.959243131, 1, 1, 1, 1, 1, 1, 1, 0.93540189, 1, 0.959243131, 1, 1, 0.959243131])
+NewsCommentaryByT5Vaswani2017Kocmi2018_0 = {
+    'dataset_transformer_name': 'dataset_transformer_newscommentary',
+    'model_name': 'transformer_vaswani2017',
+    'trainer_name': 'model_trainer_kocmi2018',
+    # 'latest_param_filename_tag': '1715672129',
+    # corresponds to dictionary 'get' calls in the dataset_loader constructor
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_min_percentile': 5,
+        'sentence_length_max_percentile': 95
+        # 'parsed_dataset_filename': 'setimes_parsed-1715586293'
+    },
+    # corresponds to dictionary 'get' calls in the model constructor
+    'model_hyperparameters': {
+        'd_model': 256,
+        'nhead': 8,
+        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
+        'num_encoder_layers': 9,
+        'num_decoder_layers': 3,
+        'dim_feedforward': 2048,
+        'dropout': 0.1,
+        'activation': torch.nn.functional.relu,
+        'custom_encoder': None,
+        'custom_decoder': None,
+        'layer_norm_eps': 1e-5,
+        'batch_first': True,
+        'norm_first': False,
+        'bias': True,
+        'device': None,
+        'dtype': None
+    },
+    # corresponds to dictionary 'get' calls in the trainer constructor
+    'trainer_hyperparameters': {
+        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
+        'optimizer_name': 'Adam',
+        'lr_scheduler_name': 'ExponentialLR',
+        'initial_lr': 0.0005,
+        'exp_decay': 0.5,
+        'epochs': 10,
+        'epoch_starting_index': 0,
+        'batch_size_limit': 175,
+        'element_difference_limit': 19,
+        'batch_starting_index': 0
+    }
+}
+
+NewsCommentaryByT5Vaswani2017Kocmi2018_1 = {
+    'dataset_transformer_name': 'dataset_transformer_newscommentary',
+    'model_name': 'transformer_vaswani2017',
+    'trainer_name': 'model_trainer_kocmi2018',
+    'latest_param_filename_tag': '1715672186',
+    # corresponds to dictionary 'get' calls in the dataset_loader constructor
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_min_percentile': 5,
+        'sentence_length_max_percentile': 95
+        # 'parsed_dataset_filename': 'setimes_parsed-1715586974'
+    },
+    # corresponds to dictionary 'get' calls in the model constructor
+    'model_hyperparameters': {
+        'd_model': 256,
+        'nhead': 8,
+        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
+        'num_encoder_layers': 9,
+        'num_decoder_layers': 3,
+        'dim_feedforward': 1796,
+        'dropout': 0.1,
+        'activation': torch.nn.functional.relu,
+        'custom_encoder': None,
+        'custom_decoder': None,
+        'layer_norm_eps': 1e-5,
+        'batch_first': True,
+        'norm_first': False,
+        'bias': True,
+        'device': None,
+        'dtype': None
+    },
+    # corresponds to dictionary 'get' calls in the trainer constructor
+    'trainer_hyperparameters': {
+        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
+        'optimizer_name': 'Adam',
+        'lr_scheduler_name': 'ExponentialLR',
+        'initial_lr': 0.0005,
+        'exp_decay': 0.5,
+        'epochs': 10,
+        'epoch_starting_index': 0,
+        'batch_size_limit': 250,
+        'element_difference_limit': 19,
+        'batch_starting_index': 0
+    }
+}
+
+NewsCommentaryByT5Vaswani2017Kocmi2018_2 = {
+    'dataset_transformer_name': 'dataset_transformer_newscommentary',
+    'model_name': 'transformer_vaswani2017',
+    'trainer_name': 'model_trainer_kocmi2018',
+    'latest_param_filename_tag': '1715672061',
+    # corresponds to dictionary 'get' calls in the dataset_loader constructor
+    'dataset_transformer_hyperparameters': {
+        'sentence_length_min_percentile': 5,
+        'sentence_length_max_percentile': 95
+        # 'parsed_dataset_filename': 'setimes_parsed-1715586361'
+    },
+    # corresponds to dictionary 'get' calls in the model constructor
+    'model_hyperparameters': {
+        'd_model': 128,
+        'nhead': 8,
+        # number of encoders is 3 times that of decoders, following Xue 2021 - ByT5 - Sec 3.1
+        'num_encoder_layers': 9,
+        'num_decoder_layers': 3,
+        'dim_feedforward': 1024,
+        'dropout': 0.1,
+        'activation': torch.nn.functional.relu,
+        'custom_encoder': None,
+        'custom_decoder': None,
+        'layer_norm_eps': 1e-5,
+        'batch_first': True,
+        'norm_first': False,
+        'bias': True,
+        'device': None,
+        'dtype': None
+    },
+    # corresponds to dictionary 'get' calls in the trainer constructor
+    'trainer_hyperparameters': {
+        # optimization and lr schedule following Kocmi 2018 - Trivial TL - Sec 3
+        'optimizer_name': 'Adam',
+        'lr_scheduler_name': 'ExponentialLR',
+        'initial_lr': 0.0005,
+        'exp_decay': 0.5,
+        'epochs': 10,
+        'epoch_starting_index': 0,
+        'batch_size_limit': 400,
+        'element_difference_limit': 19,
+        'batch_starting_index': 0
+    }
+}
 
 english_char_mappings = {
     ord(" "): ord(" "),
@@ -478,6 +611,312 @@ turkish_char_mappings = {
     ord("ъ"): ord("\u0120"),
 }
 
+enkk_english_character_mappings = {
+    ord("Ġ"): ord("Ġ"),
+    ord("ġ"): ord("ġ"),
+    ord("Ģ"): ord("Ģ"),
+    ord("N"): ord("N"),
+    ord("E"): ord("E"),
+    ord("W"): ord("W"),
+    ord(" "): ord(" "),
+    ord("Y"): ord("Y"),
+    ord("O"): ord("O"),
+    ord("R"): ord("R"),
+    ord("K"): ord("K"),
+    ord("–"): ord("-"),
+    ord("v"): ord("v"),
+    ord("e"): ord("e"),
+    ord("r"): ord("r"),
+    ord("y"): ord("y"),
+    ord("J"): ord("J"),
+    ord("a"): ord("a"),
+    ord("n"): ord("n"),
+    ord("u"): ord("u"),
+    ord(","): ord(","),
+    ord("I"): ord("I"),
+    ord("t"): ord("t"),
+    ord("o"): ord("o"),
+    ord("c"): ord("c"),
+    ord("f"): ord("f"),
+    ord("s"): ord("s"),
+    ord("h"): ord("h"),
+    ord("m"): ord("m"),
+    ord("i"): ord("i"),
+    ord("g"): ord("g"),
+    ord("."): ord("."),
+    ord("l"): ord("l"),
+    ord("d"): ord("d"),
+    ord(";"): ord(";"),
+    ord("b"): ord("b"),
+    ord("w"): ord("w"),
+    ord("x"): ord("x"),
+    ord("p"): ord("p"),
+    ord("H"): ord("H"),
+    ord("T"): ord("T"),
+    ord("’"): ord("'"),
+    ord("q"): ord("q"),
+    ord("-"): ord("-"),
+    ord("("): ord("("),
+    ord("“"): ord("\""),
+    ord("”"): ord("\""),
+    ord(")"): ord(")"),
+    ord("U"): ord("U"),
+    ord("S"): ord("S"),
+    ord("G"): ord("G"),
+    ord("2"): ord("2"),
+    ord("0"): ord("0"),
+    ord("8"): ord("8"),
+    ord("k"): ord("k"),
+    ord("F"): ord("F"),
+    ord("1"): ord("1"),
+    ord("6"): ord("6"),
+    ord("B"): ord("B"),
+    ord("A"): ord("A"),
+    ord("C"): ord("C"),
+    ord("D"): ord("D"),
+    ord("9"): ord("9"),
+    ord("%"): ord("%"),
+    ord("j"): ord("j"),
+    ord("?"): ord("?"),
+    ord("z"): ord("z"),
+    ord("M"): ord("M"),
+    ord(":"): ord(":"),
+    ord("V"): ord("V"),
+    ord("4"): ord("4"),
+    ord("3"): ord("3"),
+    ord("L"): ord("L"),
+    ord("P"): ord("P"),
+    ord("5"): ord("5"),
+    ord("7"): ord("7"),
+    ord("$"): ord("Ġ"),
+    ord("€"): ord("Ġ"),
+    ord("ñ"): ord("Ġ"),
+    ord("é"): ord("Ġ"),
+    ord("è"): ord("Ġ"),
+    ord("¥"): ord("Ġ"),
+    ord("&"): ord("Ġ"),
+    ord("—"): ord("Ġ"),
+    ord("Z"): ord("Z"),
+    ord("X"): ord("X"),
+    ord("ä"): ord("Ġ"),
+    ord("à"): ord("Ġ"),
+    ord("/"): ord("Ġ"),
+    ord("Q"): ord("Q"),
+    ord("ç"): ord("Ġ"),
+    ord("É"): ord("Ġ"),
+    ord("!"): ord("Ġ"),
+    ord("á"): ord("Ġ"),
+    ord("š"): ord("Ġ"),
+    ord("í"): ord("Ġ"),
+    ord("ó"): ord("Ġ"),
+    ord("ğ"): ord("Ġ"),
+    ord("â"): ord("Ġ"),
+    ord("ü"): ord("Ġ"),
+    ord("ö"): ord("Ġ"),
+    ord("‘"): ord("Ġ"),
+    ord("#"): ord("Ġ"),
+    ord("ï"): ord("Ġ"),
+    ord("["): ord("Ġ"),
+    ord("]"): ord("Ġ"),
+    ord("…"): ord("Ġ"),
+    ord("ð"): ord("Ġ"),
+    ord("ń"): ord("Ġ"),
+    ord("'"): ord("'"),
+    ord("Á"): ord("Ġ"),
+    ord("î"): ord("Ġ"),
+    ord("ŏ"): ord("Ġ"),
+    ord("ê"): ord("Ġ"),
+    ord("+"): ord("Ġ"),
+    ord("ł"): ord("Ġ"),
+    ord("ô"): ord("Ġ"),
+    ord("£"): ord("Ġ"),
+    ord("Š"): ord("Ġ")
+}
+
+enkk_kazakh_character_mappings = {
+    ord("Ġ"): ord("Ġ"),
+    ord("ġ"): ord("ġ"),
+    ord("Ģ"): ord("Ģ"),
+    ord("Н"): ord("Н"),
+    ord("Ь"): ord("Ь"),
+    ord("Ю"): ord("Ю"),
+    ord("-"): ord("-"),
+    ord("Й"): ord("Й"),
+    ord("О"): ord("О"),
+    ord("Р"): ord("Р"),
+    ord("К"): ord("К"),
+    ord(" "): ord(" "),
+    ord("–"): ord("–"),
+    ord("Ә"): ord("Ә"),
+    ord("р"): ord("р"),
+    ord("б"): ord("б"),
+    ord("і"): ord("і"),
+    ord("қ"): ord("қ"),
+    ord("а"): ord("а"),
+    ord("ң"): ord("ң"),
+    ord("т"): ord("т"),
+    ord("й"): ord("й"),
+    ord("ы"): ord("ы"),
+    ord("н"): ord("н"),
+    ord("д"): ord("д"),
+    ord(","): ord(","),
+    ord("м"): ord("м"),
+    ord("е"): ord("е"),
+    ord("л"): ord("л"),
+    ord("ғ"): ord("ғ"),
+    ord("ж"): ord("ж"),
+    ord("о"): ord("о"),
+    ord("с"): ord("с"),
+    ord("."): ord("."),
+    ord("Э"): ord("Э"),
+    ord("к"): ord("к"),
+    ord("и"): ord("и"),
+    ord("у"): ord("у"),
+    ord(";"): ord(";"),
+    ord("Г"): ord("Г"),
+    ord("Т"): ord("Т"),
+    ord("э"): ord("э"),
+    ord("("): ord("("),
+    ord("«"): ord("«"),
+    ord("ш"): ord("ш"),
+    ord("»"): ord("»"),
+    ord("п"): ord("п"),
+    ord(")"): ord(")"),
+    ord("ө"): ord("ө"),
+    ord("ұ"): ord("ұ"),
+    ord("С"): ord("С"),
+    ord("ү"): ord("ү"),
+    ord("ф"): ord("ф"),
+    ord("Е"): ord("Е"),
+    ord("А"): ord("А"),
+    ord("Қ"): ord("Қ"),
+    ord("Ш"): ord("Ш"),
+    ord("2"): ord("2"),
+    ord("0"): ord("0"),
+    ord("8"): ord("8"),
+    ord("Ұ"): ord("Ұ"),
+    ord("я"): ord("я"),
+    ord("з"): ord("з"),
+    ord("ь"): ord("ь"),
+    ord("г"): ord("г"),
+    ord("М"): ord("М"),
+    ord("1"): ord("1"),
+    ord("6"): ord("6"),
+    ord("һ"): ord("һ"),
+    ord("ә"): ord("ә"),
+    ord("Б"): ord("Б"),
+    ord("Д"): ord("Д"),
+    ord("х"): ord("х"),
+    ord("9"): ord("9"),
+    ord("%"): ord("%"),
+    ord("?"): ord("?"),
+    ord("ц"): ord("ц"),
+    ord("Ж"): ord("Ж"),
+    ord(":"): ord(":"),
+    ord("в"): ord("в"),
+    ord("ю"): ord("ю"),
+    ord("Х"): ord("Х"),
+    ord("В"): ord("В"),
+    ord("4"): ord("4"),
+    ord("3"): ord("3"),
+    ord("І"): ord("І"),
+    ord("Ө"): ord("Ө"),
+    ord("5"): ord("5"),
+    ord("T"): ord("T"),
+    ord("a"): ord("a"),
+    ord("x"): ord("x"),
+    ord("P"): ord("P"),
+    ord("o"): ord("o"),
+    ord("l"): ord("l"),
+    ord("i"): ord("i"),
+    ord("c"): ord("c"),
+    ord("y"): ord("y"),
+    ord("C"): ord("C"),
+    ord("e"): ord("e"),
+    ord("n"): ord("n"),
+    ord("t"): ord("t"),
+    ord("r"): ord("r"),
+    ord("h"): ord("h"),
+    ord("F"): ord("F"),
+    ord("u"): ord("u"),
+    ord("d"): ord("d"),
+    ord("M"): ord("M"),
+    ord("’"): ord("Ġ"),
+    ord("s"): ord("s"),
+    ord("A"): ord("A"),
+    ord("7"): ord("7"),
+    ord("Я"): ord("Я"),
+    ord("П"): ord("П"),
+    ord("И"): ord("И"),
+    ord("f"): ord("f"),
+    ord("Ф"): ord("Ф"),
+    ord("Л"): ord("Л"),
+    ord("S"): ord("S"),
+    ord("z"): ord("z"),
+    ord("З"): ord("З"),
+    ord("“"): ord("\""),
+    ord("”"): ord("\""),
+    ord("G"): ord("G"),
+    ord("N"): ord("N"),
+    ord("Ү"): ord("Ү"),
+    ord("Ғ"): ord("Ғ"),
+    ord("ч"): ord("ч"),
+    ord("Ң"): ord("Ġ"),
+    ord("ъ"): ord("ъ"),
+    ord("K"): ord("Ġ"),
+    ord("H"): ord("H"),
+    ord("m"): ord("m"),
+    ord("R"): ord("R"),
+    ord("I"): ord("I"),
+    ord("p"): ord("p"),
+    ord("B"): ord("B"),
+    ord("Ч"): ord("Ч"),
+    ord("D"): ord("D"),
+    ord("L"): ord("L"),
+    ord("b"): ord("b"),
+    ord("E"): ord("E"),
+    ord("Ц"): ord("Ц"),
+    ord("k"): ord("k"),
+    ord("$"): ord("Ġ"),
+    ord("v"): ord("v"),
+    ord("¥"): ord("Ġ"),
+    ord("У"): ord("У"),
+    ord("g"): ord("g"),
+    ord("Ы"): ord("Ы"),
+    ord("w"): ord("w"),
+    ord("q"): ord("Ġ"),
+    ord("'"): ord("Ġ"),
+    ord("Y"): ord("Ġ"),
+    ord("U"): ord("U"),
+    ord("O"): ord("O"),
+    ord("/"): ord("/"),
+    ord("é"): ord("Ġ"),
+    ord("!"): ord("Ġ"),
+    ord("V"): ord("V"),
+    ord("\""): ord("\""),
+    ord("ü"): ord("Ġ"),
+    ord("Z"): ord("Ġ"),
+    ord("W"): ord("W"),
+    ord("#"): ord("Ġ"),
+    ord("щ"): ord("щ"),
+    ord("J"): ord("Ġ"),
+    ord("&"): ord("Ġ"),
+    ord("Q"): ord("Ġ"),
+    ord("X"): ord("Ġ"),
+    ord("�"): ord("Ġ"),
+    ord("ä"): ord("Ġ"),
+    ord("ё"): ord("Ġ"),
+    ord("ə"): ord("Ġ"),
+    ord("£"): ord("Ġ"),
+    ord("j"): ord("Ġ"),
+    ord("É"): ord("Ġ"),
+    ord("["): ord("Ġ"),
+    ord("]"): ord("Ġ"),
+    ord("€"): ord("Ġ"),
+    ord("\u200b"): ord("Ġ"),
+    ord("+"): ord("Ġ")
+}
+
 class DatasetHolder:
 
     def __init__(self):
@@ -645,7 +1084,6 @@ class dataset_transformer_setimesbyt5():
         if 'sentence_length_max_percentile' in dataset_hyperparameters:
             self.sentence_length_max_percentile = dataset_hyperparameters['sentence_length_max_percentile']
 
-
     def read_dataset(self):
         dataset_holder = None
         if self.parsed_dataset_filename is not None:
@@ -722,7 +1160,7 @@ class dataset_transformer_setimesbyt5():
             source_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
             target_encodings = list()
             source_encodings = list()
-            for entry in target_sentences_length_limited:
+            for entry in en_sentences_length_limited:
                 encoding = list()
                 for character in entry:
                     if character not in target_vocab:
@@ -743,6 +1181,121 @@ class dataset_transformer_setimesbyt5():
             dataset_holder.set_target_encodings(target_encodings)
             dataset_holder.set_source_vocab(tuple(source_vocab))
             dataset_holder.set_source_encodings(source_encodings)
+            dataset_holder = DatasetUtils.create_dataset_segments(dataset_holder)
+            torch.save(dataset_holder,
+                       self.datasets_directory + "/" +
+                       self.parsed_dataset_directory + "/" +
+                       "setimes_parsed-" + str(int(time.time())))
+        return dataset_holder
+
+
+class dataset_transformer_newscommentary:
+
+    def __init__(self,
+                 datasets_directory=root_filepath+"resources",
+                 raw_dataset_directory="raw_datasets/SMTNewsCommentary",
+                 parsed_dataset_directory="parsed_datasets/SMTNewsCommentary",
+                 translations_file='News-Commentary.en-kk.tmx',
+                 dataset_hyperparameters=None):
+        self.datasets_directory = datasets_directory
+        self.raw_dataset_directory = raw_dataset_directory
+        self.parsed_dataset_directory = parsed_dataset_directory
+        self.translations_file = translations_file
+        self.parsed_dataset_filename = None
+        if 'parsed_dataset_filename' in dataset_hyperparameters:
+            self.parsed_dataset_filename = dataset_hyperparameters['parsed_dataset_filename']
+        self.sentence_length_min_percentile = None
+        if 'sentence_length_min_percentile' in dataset_hyperparameters:
+            self.sentence_length_min_percentile = dataset_hyperparameters['sentence_length_min_percentile']
+        self.sentence_length_max_percentile = None
+        if 'sentence_length_max_percentile' in dataset_hyperparameters:
+            self.sentence_length_max_percentile = dataset_hyperparameters['sentence_length_max_percentile']
+
+    def read_dataset(self):
+        dataset_holder = None
+        if self.parsed_dataset_filename is not None:
+            dataset_holder = torch.load(self.datasets_directory + "/"
+                                        + self.parsed_dataset_directory + "/"
+                                        + self.parsed_dataset_filename)
+        else:
+            translations_filepath = self.datasets_directory + "/" + self.raw_dataset_directory + "/" + self.translations_file
+            en_sentences = list()
+            kk_sentences = list()
+            body_element = ElementTree.parse(translations_filepath).getroot()[1]
+            for i in range(0, len(body_element)):
+                if len(body_element[i]) != 2 or len(body_element[i][0]) != 1 or len(body_element[i][1]) != 1:
+                    print(f"Error: translation entry {i} did not have expected structure")
+                    print(f"Last English translation: {en_sentences[-1]}")
+                if (body_element[i][0].attrib['{http://www.w3.org/XML/1998/namespace}lang'] == 'en' and
+                    body_element[i][1].attrib['{http://www.w3.org/XML/1998/namespace}lang'] == 'kk'):
+                    en_sentences.append(body_element[i][0][0].text.strip())
+                    kk_sentences.append(body_element[i][1][0].text.strip())
+                elif (body_element[i][0].attrib['{http://www.w3.org/XML/1998/namespace}lang'] == 'kk' and
+                      body_element[i][1].attrib['{http://www.w3.org/XML/1998/namespace}lang'] == 'en'):
+                    kk_sentences.append(body_element[i][0][0].text.strip())
+                    en_sentences.append(body_element[i][1][0].text.strip())
+                else:
+                    print(f"Error: translation entry {i} did not have expected structure")
+                    print(f"Last English translation: {en_sentences[-1]}")
+            en_sentence_lengths = list()
+            for sentence in en_sentences:
+                en_sentence_lengths.append(len(sentence))
+            kk_sentence_lengths = list()
+            for sentence in kk_sentences:
+                kk_sentence_lengths.append(len(sentence))
+            en_sentences_length_limited = list()
+            kk_sentences_length_limited = list()
+            en_min_len = int(np.percentile(sorted(en_sentence_lengths), self.sentence_length_min_percentile))
+            en_max_len = int(np.percentile(sorted(en_sentence_lengths), self.sentence_length_max_percentile))
+            kk_min_len = int(np.percentile(sorted(kk_sentence_lengths), self.sentence_length_min_percentile))
+            kk_max_len = int(np.percentile(sorted(kk_sentence_lengths), self.sentence_length_max_percentile))
+            max_src_seq_obs = 0
+            max_tgt_seq_obs = 0
+            for i in range(0, len(en_sentences)):
+                if (len(en_sentences[i]) > en_min_len and len(en_sentences[i]) <= en_max_len
+                        and len(kk_sentences[i]) > kk_min_len and len(kk_sentences[i]) <= kk_max_len):
+                    if len(kk_sentences[i]) > max_src_seq_obs:
+                        max_src_seq_obs = len(kk_sentences[i])
+                    if len(en_sentences[i]) > max_tgt_seq_obs:
+                        max_tgt_seq_obs = len(en_sentences[i])
+                    en_sentences_length_limited.append(en_sentences[i].translate(enkk_english_character_mappings))
+                    kk_sentences_length_limited.append(kk_sentences[i].translate(enkk_kazakh_character_mappings))
+            dataset_holder = DatasetHolder()
+            dataset_holder.set_max_src_seq_obs(max_src_seq_obs)
+            dataset_holder.set_max_tgt_seq_obs(max_tgt_seq_obs)
+            # encode to Pytorch tensors as raw UTF-8 character vocabulary
+            # method replicated from Xue 2021 - ByT5 - Introduction, sec 3.1
+            unknown_vocabulary_type = "\u0120".encode('utf-8').decode('utf-8')
+            padding_vocabulary_type = "\u0121".encode('utf-8').decode('utf-8')
+            end_of_sequence_vocabulary_type = "\u0122".encode('utf-8').decode('utf-8')
+            dataset_holder.set_unknown_vocabulary_type(unknown_vocabulary_type)
+            dataset_holder.set_padding_vocabulary_type(padding_vocabulary_type)
+            dataset_holder.set_end_of_sequence_vocabulary_type(end_of_sequence_vocabulary_type)
+            en_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
+            kk_vocab = list([unknown_vocabulary_type, padding_vocabulary_type, end_of_sequence_vocabulary_type])
+            en_encodings = list()
+            kk_encodings = list()
+            for entry in en_sentences_length_limited:
+                encoding = list()
+                for character in entry:
+                    if character not in en_vocab:
+                        en_vocab.append(character)
+                    encoding.append(en_vocab.index(character))
+                encoding.append(en_vocab.index(end_of_sequence_vocabulary_type))
+                en_encodings.append(torch.tensor(encoding))
+            for entry in kk_sentences_length_limited:
+                encoding = list()
+                for character in entry:
+                    if character not in kk_vocab:
+                        kk_vocab.append(character)
+                    encoding.append(kk_vocab.index(character))
+                encoding.append(kk_vocab.index(end_of_sequence_vocabulary_type))
+                kk_encodings.append(torch.tensor(encoding))
+            # fix vocabulary indices using tuple type
+            dataset_holder.set_target_vocab(tuple(en_vocab))
+            dataset_holder.set_target_encodings(en_encodings)
+            dataset_holder.set_source_vocab(tuple(kk_vocab))
+            dataset_holder.set_source_encodings(kk_encodings)
             dataset_holder = DatasetUtils.create_dataset_segments(dataset_holder)
             torch.save(dataset_holder,
                        self.datasets_directory + "/" +
@@ -1407,15 +1960,15 @@ class Runner:
     def __init__(self,
                  model_parameter_directory=root_filepath+"resources/model_parameters",
                  trainer_parameter_directory=root_filepath+"resources/trainer_parameters",
-                 runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_0"):
+                 runner_hyperparameters_name="NewsCommentaryByT5Vaswani2017Kocmi2018_0"):
         self.model_parameter_directory = model_parameter_directory
         self.trainer_parameter_directory = trainer_parameter_directory
         self.runner_hyperparameters_name = runner_hyperparameters_name
-        self.runner_hyperparameters = SETimesByT5Vaswani2017Kocmi2018_0
+        self.runner_hyperparameters = NewsCommentaryByT5Vaswani2017Kocmi2018_0
         self.dataset_holder: DatasetHolder = None
         self.model = None
         self.trainer = None
-        self.latest_param_filename_tag = None
+        self.latest_param_filename_tag = ''
         if 'latest_param_filename_tag' in self.runner_hyperparameters:
             self.latest_param_filename_tag = self.runner_hyperparameters['latest_param_filename_tag']
         print(f"Initialized runner {runner_hyperparameters_name} with parameters {self.runner_hyperparameters}")
@@ -1423,7 +1976,7 @@ class Runner:
     def load_dataset(self):
         dataset_transformer_name = self.runner_hyperparameters.get('dataset_transformer_name')
         dataset_hyperparameters = self.runner_hyperparameters.get('dataset_transformer_hyperparameters')
-        dataset_transformer = dataset_transformer_setimesbyt5(dataset_hyperparameters=dataset_hyperparameters)
+        dataset_transformer = dataset_transformer_newscommentary(dataset_hyperparameters=dataset_hyperparameters)
         self.dataset_holder = dataset_transformer.read_dataset()
 
     def load_model(self):
@@ -1455,7 +2008,7 @@ class Runner:
         self.trainer.run_trainer()
 
 
-runner = Runner(runner_hyperparameters_name="SETimesByT5Vaswani2017Kocmi2018_2")
+runner = Runner(runner_hyperparameters_name="NewsCommentaryByT5Vaswani2017Kocmi2018_0")
 
 runner.load_dataset()
 runner.load_model()
