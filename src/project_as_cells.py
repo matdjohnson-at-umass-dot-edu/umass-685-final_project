@@ -1284,6 +1284,8 @@ class dataset_transformer_newscommentary:
             for entry in kk_sentences_length_limited:
                 encoding = list()
                 for character in entry:
+                    if character not in kk_vocab:
+                        kk_vocab.append(character)
                     encoding.append(kk_vocab.index(character))
                 encoding.append(kk_vocab.index(end_of_sequence_vocabulary_type))
                 kk_encodings.append(torch.tensor(encoding))
@@ -1623,11 +1625,7 @@ class DatasetUtils:
         decoded_tensor = np.take(vocab, tensor_to_decode.detach().to(device="cpu").flatten().numpy())
         return "".join(decoded_tensor.tolist())
 
-    @staticmethod
-    def decode_source_tensor(dataset_holder: DatasetHolder, tensor_to_decode):
-        vocab = dataset_holder.get_source_vocab_numpy()
-        decoded_tensor = np.take(vocab, tensor_to_decode.detach().to(device="cpu").flatten().numpy())
-        return "".join(decoded_tensor.tolist())
+
 
 
 # class name matches file name
@@ -2015,7 +2013,7 @@ class Runner:
         model_parameter_filepath = self.model_parameter_directory + "/" + self.runner_hyperparameters_name + "-" + self.latest_param_filename_tag + "-model.params"
         self.model = transformer_vaswani2017(model_hyperparameters=model_hyperparameters)
         self.model.freeze_target_embeddings()
-        model_parameters = torch.load(model_parameter_filepath)
+        model_parameters = torch.load(model_parameter_filepath, map_location=torch.device('cpu'))
         self.model.load_state_dict(model_parameters)
         self.model.set_source_embeddings_for_transfer_learning(len(self.dataset_holder.get_source_vocab()))
 
